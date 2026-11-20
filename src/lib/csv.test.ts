@@ -10,4 +10,13 @@ describe('mattersToCsv', () => {
     expect(csv).toContain('Matter ID,Regime,Title')
     expect(csv).toContain('"A, B ""quoted""\nline"')
   })
+
+  it('exports current action, history, and latest event evidence', () => {
+    const csv = mattersToCsv([aiActMatters[2]])
+
+    expect(csv).toContain('Current action subtype')
+    expect(csv).toContain('information-request')
+    expect(csv).toContain('event-frontier-rfi-sent')
+    expect(csv).toContain('source-ai-scientific-panel')
+  })
 })
