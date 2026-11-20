@@ -4,7 +4,10 @@ const port = Number(process.env.SMOKE_PORT ?? 4173)
 const baseUrl = `http://127.0.0.1:${port}`
 const server = spawn('npm', ['run', 'preview', '--', '--host', '127.0.0.1', '--port', String(port)], {
   stdio: ['ignore', 'pipe', 'pipe'],
+  detached: process.platform !== 'win32',
 })
+
+server.unref()
 
 function sleep(delay) {
   return new Promise((resolve) => setTimeout(resolve, delay))
@@ -35,5 +38,15 @@ try {
   if (!assetResponse.headers.get('content-type')?.includes('javascript')) throw new Error('Built module asset is not served as JavaScript')
   console.log(`Smoke test passed: ${baseUrl}/ and ${assetMatch[1]}`)
 } finally {
-  server.kill('SIGTERM')
+  server.stdout?.destroy()
+  server.stderr?.destroy()
+  if (process.platform === 'win32') {
+    server.kill()
+  } else if (server.pid) {
+    try {
+      process.kill(-server.pid, 'SIGTERM')
+    } catch {
+      server.kill('SIGTERM')
+    }
+  }
 }
