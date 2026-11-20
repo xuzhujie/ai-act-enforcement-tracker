@@ -17,8 +17,8 @@ const dsaSource = getSource('source-dsa-enforcement')
 const germanyAiActRoleSource = getSource('source-germany-ai-act-role')
 const germanyAiActComplaintsSource = getSource('source-germany-ai-act-complaints')
 
-function guidanceEvent(id: string, label: string, detail: string, date = VERIFIED_ON, isTrackerCapture = true): Event {
-  return { id, date, label, detail, actionType: 'guidance', isTrackerCapture }
+function guidanceEvent(id: string, label: string, detail: string, date = VERIFIED_ON, isTrackerCapture = true, sourceIds: string[] = [], citation?: string): Event {
+  return { id, date, label, detail, actionType: 'guidance', actionSubtype: 'guidance', sourceIds, ...(citation ? { citation } : {}), isTrackerCapture }
 }
 
 export const aiActMatters: Matter[] = [
@@ -30,7 +30,8 @@ export const aiActMatters: Matter[] = [
     authorityLane: 'ai-office',
     authorityName: 'European Commission · AI Office',
     primaryAuthorityId: 'ai-office',
-    actionType: 'guidance',
+    currentActionType: 'guidance',
+    currentActionSubtype: 'guidance',
     status: 'published',
     subject: 'AI Act governance bodies and enforcement split',
     scope: 'governance',
@@ -41,7 +42,7 @@ export const aiActMatters: Matter[] = [
     lastUpdatedAt: VERIFIED_ON,
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'tracker-capture',
-    events: [guidanceEvent('event-ai-governance-captured', 'Guidance captured', 'Official governance and enforcement page added to the tracker.')],
+    events: [guidanceEvent('event-ai-governance-captured', 'Guidance captured', 'Official governance and enforcement page added to the tracker.', VERIFIED_ON, true, [aiGovernanceSource.id])],
     sources: [aiGovernanceSource],
   },
   {
@@ -52,7 +53,8 @@ export const aiActMatters: Matter[] = [
     authorityLane: 'ai-office',
     authorityName: 'European Commission · AI Office',
     primaryAuthorityId: 'ai-office',
-    actionType: 'guidance',
+    currentActionType: 'guidance',
+    currentActionSubtype: 'guidance',
     status: 'published',
     subject: 'AI Office investigative and sanctioning powers',
     scope: 'governance',
@@ -63,7 +65,7 @@ export const aiActMatters: Matter[] = [
     lastUpdatedAt: VERIFIED_ON,
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'tracker-capture',
-    events: [guidanceEvent('event-ai-enforcement-captured', 'Guidance captured', 'Official enforcement framework page added to the tracker.')],
+    events: [guidanceEvent('event-ai-enforcement-captured', 'Guidance captured', 'Official enforcement framework page added to the tracker.', VERIFIED_ON, true, [aiEnforcementSource.id])],
     sources: [aiEnforcementSource],
   },
   {
@@ -74,7 +76,8 @@ export const aiActMatters: Matter[] = [
     authorityLane: 'ai-office',
     authorityName: 'European Commission · AI Office',
     primaryAuthorityId: 'ai-office',
-    actionType: 'investigation',
+    currentActionType: 'investigation',
+    currentActionSubtype: 'information-request',
     status: 'ongoing',
     subject: 'Providers of advanced GPAI models; companies and models not publicly identified',
     scope: 'gpai',
@@ -86,8 +89,8 @@ export const aiActMatters: Matter[] = [
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'source-published',
     events: [
-      { id: 'event-frontier-incident-reports', date: '2026-10-09', label: 'Serious incident reports received', detail: 'The AI Office reported receiving serious-incident reports from providers of advanced models.', actionType: 'investigation', isTrackerCapture: false },
-      { id: 'event-frontier-rfi-sent', date: '2026-10-12', label: 'Requests for information sent', detail: 'The AI Office sent requests for information on security practices and prepared further questions with the Scientific Panel.', actionType: 'investigation', isTrackerCapture: false },
+      { id: 'event-frontier-incident-reports', date: '2026-10-09', label: 'Serious incident reports received', detail: 'The AI Office reported receiving serious-incident reports from providers of advanced models.', actionType: 'investigation', actionSubtype: 'incident-review', sourceIds: [scientificPanelSource.id], citation: 'AI Office reporting on serious-incident reports', isTrackerCapture: false },
+      { id: 'event-frontier-rfi-sent', date: '2026-10-12', label: 'Requests for information sent', detail: 'The AI Office sent requests for information on security practices and prepared further questions with the Scientific Panel.', actionType: 'investigation', actionSubtype: 'information-request', sourceIds: [scientificPanelSource.id], citation: 'AI Office reporting on requests for information', isTrackerCapture: false },
     ],
     sources: [scientificPanelSource],
   },
@@ -99,7 +102,8 @@ export const aiActMatters: Matter[] = [
     authorityLane: 'ai-office',
     authorityName: 'European Commission · AI Office',
     primaryAuthorityId: 'ai-office',
-    actionType: 'guidance',
+    currentActionType: 'guidance',
+    currentActionSubtype: 'guidance',
     status: 'published',
     subject: 'GPAI, prohibited practices, and Article 50 transparency obligations',
     scope: 'transparency',
@@ -110,7 +114,7 @@ export const aiActMatters: Matter[] = [
     lastUpdatedAt: '2026-07-31',
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'source-published',
-    events: [guidanceEvent('event-ai-enforcement-start', 'Enforcement start announced', 'Commission press release published before the 2 August 2026 application date.', '2026-07-31', false)],
+    events: [guidanceEvent('event-ai-enforcement-start', 'Enforcement start announced', 'Commission press release published before the 2 August 2026 application date.', '2026-07-31', false, [enforcementStartSource.id], 'Commission press release on the AI Act enforcement start')],
     sources: [enforcementStartSource],
   },
   {
@@ -121,7 +125,8 @@ export const aiActMatters: Matter[] = [
     authorityLane: 'member-state-msa',
     authorityName: 'Member State market surveillance authorities',
     primaryAuthorityId: 'member-state-msas',
-    actionType: 'guidance',
+    currentActionType: 'guidance',
+    currentActionSubtype: 'authority-infrastructure',
     status: 'published',
     subject: 'National market surveillance authorities and single points of contact',
     scope: 'governance',
@@ -132,7 +137,15 @@ export const aiActMatters: Matter[] = [
     lastUpdatedAt: '2026-11-09',
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'source-published',
-    events: [guidanceEvent('event-market-surveillance-updated', 'Directory verified', 'Official authority directory last updated 9 November 2026.', '2026-11-09', false)],
+    coverage: {
+      status: 'directory-only',
+      checkedAt: VERIFIED_ON,
+      sourceIds: [marketSurveillanceSource.id],
+      queryScope: 'Official AI Act authority directory and listed authority role pages',
+      resultCount: 0,
+      limitation: 'Directory coverage confirms authority designation and contact points; it is not a case-discovery search and does not establish that no enforcement exists.',
+    },
+    events: [guidanceEvent('event-market-surveillance-updated', 'Directory verified', 'Official authority directory last updated 9 November 2026.', '2026-11-09', false, [marketSurveillanceSource.id], 'Official market-surveillance authority directory · updated 9 November 2026')],
     sources: [marketSurveillanceSource],
   },
   {
@@ -144,7 +157,8 @@ export const aiActMatters: Matter[] = [
     authorityName: 'Bundesnetzagentur',
     primaryAuthorityId: 'msa-de',
     memberState: 'Germany',
-    actionType: 'guidance',
+    currentActionType: 'guidance',
+    currentActionSubtype: 'authority-infrastructure',
     status: 'published',
     subject: 'AI Act complaints, market surveillance, and national coordination',
     scope: 'governance',
@@ -155,8 +169,16 @@ export const aiActMatters: Matter[] = [
     lastUpdatedAt: '2026-07-29',
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'source-published',
+    coverage: {
+      status: 'directory-only',
+      checkedAt: VERIFIED_ON,
+      sourceIds: [germanyAiActRoleSource.id, germanyAiActComplaintsSource.id],
+      queryScope: 'Bundesnetzagentur AI Act role and complaints pages',
+      resultCount: 0,
+      limitation: 'The role and complaints pages establish enforcement infrastructure, not the existence or absence of individual cases.',
+    },
     events: [
-      { id: 'event-germany-ai-act-role', date: '2026-07-29', label: 'National role announced', detail: 'The Bundesnetzagentur announced its AI Act market-surveillance, single-point-of-contact, and complaints roles under the German KI-MIG.', actionType: 'guidance', isTrackerCapture: false },
+      { id: 'event-germany-ai-act-role', date: '2026-07-29', label: 'National role announced', detail: 'The Bundesnetzagentur announced its AI Act market-surveillance, single-point-of-contact, and complaints roles under the German KI-MIG.', actionType: 'guidance', actionSubtype: 'authority-infrastructure', sourceIds: [germanyAiActRoleSource.id, germanyAiActComplaintsSource.id], citation: 'Bundesnetzagentur AI Act role and complaints pages', isTrackerCapture: false },
     ],
     sources: [germanyAiActRoleSource, germanyAiActComplaintsSource],
   },
@@ -168,7 +190,8 @@ export const aiActMatters: Matter[] = [
     authorityLane: 'ai-office',
     authorityName: 'European Commission · AI Office',
     primaryAuthorityId: 'ai-office',
-    actionType: 'guidance',
+    currentActionType: 'guidance',
+    currentActionSubtype: 'guidance',
     status: 'published',
     subject: 'AI Office implementation, evaluation, guidance, and compliance tasks',
     scope: 'governance',
@@ -179,7 +202,7 @@ export const aiActMatters: Matter[] = [
     lastUpdatedAt: VERIFIED_ON,
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'tracker-capture',
-    events: [guidanceEvent('event-ai-office-captured', 'Guidance captured', 'Official AI Office role page added to the tracker.')],
+    events: [guidanceEvent('event-ai-office-captured', 'Guidance captured', 'Official AI Office role page added to the tracker.', VERIFIED_ON, true, [aiOfficeSource.id])],
     sources: [aiOfficeSource],
   },
   {
@@ -190,7 +213,8 @@ export const aiActMatters: Matter[] = [
     authorityLane: 'ai-office',
     authorityName: 'European Commission · AI Office',
     primaryAuthorityId: 'ai-office',
-    actionType: 'guidance',
+    currentActionType: 'guidance',
+    currentActionSubtype: 'guidance',
     status: 'published',
     subject: 'General-purpose AI models and systemic-risk obligations',
     scope: 'gpai',
@@ -201,7 +225,7 @@ export const aiActMatters: Matter[] = [
     lastUpdatedAt: VERIFIED_ON,
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'tracker-capture',
-    events: [guidanceEvent('event-gpai-qa-captured', 'Guidance captured', 'Official GPAI FAQ added to the tracker.')],
+    events: [guidanceEvent('event-gpai-qa-captured', 'Guidance captured', 'Official GPAI FAQ added to the tracker.', VERIFIED_ON, true, [gpaiSource.id])],
     sources: [gpaiSource],
   },
   {
@@ -212,7 +236,8 @@ export const aiActMatters: Matter[] = [
     authorityLane: 'ai-office',
     authorityName: 'European Commission · AI Office',
     primaryAuthorityId: 'ai-office',
-    actionType: 'guidance',
+    currentActionType: 'guidance',
+    currentActionSubtype: 'guidance',
     status: 'published',
     subject: 'Information requests under the AI Act',
     scope: 'governance',
@@ -223,7 +248,7 @@ export const aiActMatters: Matter[] = [
     lastUpdatedAt: '2026-10-20',
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'source-published',
-    events: [guidanceEvent('event-fundamental-rights-channel', 'Channel published', 'Official request channel published for national fundamental-rights authorities.', '2026-10-20', false)],
+    events: [guidanceEvent('event-fundamental-rights-channel', 'Channel published', 'Official request channel published for national fundamental-rights authorities.', '2026-10-20', false, [fundamentalRightsSource.id], 'Official Article 77 request-channel page')],
     sources: [fundamentalRightsSource],
   },
   {
@@ -234,7 +259,8 @@ export const aiActMatters: Matter[] = [
     authorityLane: 'ai-office',
     authorityName: 'European Commission · AI Office',
     primaryAuthorityId: 'ai-office',
-    actionType: 'guidance',
+    currentActionType: 'guidance',
+    currentActionSubtype: 'guidance',
     status: 'published',
     subject: 'Scientific Panel, Advisory Forum, and enforcement support',
     scope: 'governance',
@@ -245,7 +271,7 @@ export const aiActMatters: Matter[] = [
     lastUpdatedAt: '2026-06-01',
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'source-published',
-    events: [guidanceEvent('event-expert-support', 'Announcement published', 'Independent expert support announcement captured.', '2026-06-01', false)],
+    events: [guidanceEvent('event-expert-support', 'Announcement published', 'Independent expert support announcement captured.', '2026-06-01', false, [expertSupportSource.id], 'Commission announcement on the Scientific Panel and Advisory Forum')],
     sources: [expertSupportSource],
   },
 ]
@@ -259,7 +285,8 @@ export const excludedMatters: Matter[] = [
     authorityLane: 'other',
     authorityName: 'European Commission · DMA Team',
     primaryAuthorityId: 'dma-team',
-    actionType: 'investigation',
+    currentActionType: 'investigation',
+    currentActionSubtype: 'formal-investigation',
     status: 'ongoing',
     subject: 'Gatekeeper platform practices',
     scope: 'other',
@@ -271,7 +298,7 @@ export const excludedMatters: Matter[] = [
     lastUpdatedAt: '2024-03-25',
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'source-published',
-    events: [{ id: 'event-dma-opened', date: '2024-03-25', label: 'Investigation opened', detail: 'DMA non-compliance investigations announced by the Commission.', actionType: 'investigation', isTrackerCapture: false }],
+    events: [{ id: 'event-dma-opened', date: '2024-03-25', label: 'Investigation opened', detail: 'DMA non-compliance investigations announced by the Commission.', actionType: 'investigation', actionSubtype: 'formal-investigation', sourceIds: [dmaSource.id], citation: 'European Commission DMA investigation announcement', isTrackerCapture: false }],
     sources: [dmaSource],
   },
   {
@@ -282,7 +309,8 @@ export const excludedMatters: Matter[] = [
     authorityLane: 'other',
     authorityName: 'European Commission · DSA',
     primaryAuthorityId: 'dsa-team',
-    actionType: 'guidance',
+    currentActionType: 'guidance',
+    currentActionSubtype: 'guidance',
     status: 'published',
     subject: 'Commission and Digital Services Coordinators',
     scope: 'other',
@@ -294,12 +322,20 @@ export const excludedMatters: Matter[] = [
     lastUpdatedAt: VERIFIED_ON,
     lastVerifiedAt: VERIFIED_ON,
     dateBasis: 'tracker-capture',
-    events: [guidanceEvent('event-dsa-framework', 'Framework captured', 'Official DSA enforcement page retained as an excluded adjacent-regime reference.')],
+    events: [guidanceEvent('event-dsa-framework', 'Framework captured', 'Official DSA enforcement page retained as an excluded adjacent-regime reference.', VERIFIED_ON, false, [dsaSource.id], 'Official DSA enforcement framework page')],
     sources: [dsaSource],
   },
 ]
 
 const authorityDirectorySource = marketSurveillanceSource
+const memberStateCoverage = {
+  status: 'directory-only' as const,
+  checkedAt: VERIFIED_ON,
+  sourceIds: [authorityDirectorySource.id],
+  queryScope: 'Official AI Act authority directory and listed authority role pages',
+  resultCount: 0,
+  limitation: 'Directory coverage confirms authority designation and contact points; it is not a case-discovery search and does not establish that no enforcement exists.',
+}
 
 function memberState(
   id: string,
@@ -314,6 +350,7 @@ function memberState(
     lane: 'member-state-msa',
     source: authorityDirectorySource,
     isSinglePointOfContact: name !== 'No single point of contact listed',
+    coverage: memberStateCoverage,
     ...options,
   }
 }
