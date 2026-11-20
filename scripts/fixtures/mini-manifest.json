@@ -1,0 +1,16 @@
+[
+  {
+    "id": "fixture-ok",
+    "title": "Fixture success page",
+    "url": "https://example.com/ok",
+    "publisher": "Fixture",
+    "evidenceLevel": "authority-page"
+  },
+  {
+    "id": "fixture-failed",
+    "title": "Fixture failed page",
+    "url": "https://example.com/fail",
+    "publisher": "Fixture",
+    "evidenceLevel": "authority-page"
+  }
+]
