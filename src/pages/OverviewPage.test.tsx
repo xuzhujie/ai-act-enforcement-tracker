@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import OverviewPage from './OverviewPage'
 import { aiActMatters, authorities, excludedMatters } from '../data/seed'
@@ -19,5 +19,20 @@ describe('OverviewPage', () => {
 
     expect(screen.getByText('没有匹配的最新活动')).toBeTruthy()
     expect(screen.getByRole('button', { name: '清除当前筛选' })).toBeTruthy()
+  })
+
+  it('labels latest activity with the latest event action rather than the matter current action', () => {
+    const multiStageMatter = {
+      ...aiActMatters[0],
+      id: 'multi-stage-latest-activity',
+      currentActionType: 'penalty' as const,
+      currentActionSubtype: 'sanction-decision' as const,
+      status: 'concluded' as const,
+      events: [{ ...aiActMatters[0].events[0], actionType: 'investigation' as const, actionSubtype: 'formal-investigation' as const, date: '2026-11-20' }],
+    }
+    render(<OverviewPage matters={[multiStageMatter]} authorities={authorities} metrics={getOverviewMetrics([multiStageMatter])} onSelectMatter={vi.fn()} hasActiveFilters={false} onClearFilters={vi.fn()} />)
+
+    const row = screen.getByRole('row', { name: /multi-stage-latest-activity|Governance & enforcement architecture/ })
+    expect(within(row).getByText('正式调查')).toBeTruthy()
   })
 })
