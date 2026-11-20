@@ -14,6 +14,25 @@ function isAiActMatter(matter: Matter): boolean {
   return matter.regime === 'ai-act'
 }
 
+export function isFormalInvestigation(matter: Matter): boolean {
+  return matter.currentActionType === 'investigation' && matter.currentActionSubtype === 'formal-investigation'
+}
+
+export function getMatterActionHistory(matter: Matter): Matter['currentActionType'][] {
+  const actionHistory: Matter['currentActionType'][] = []
+  const events = [...matter.events].sort((a, b) => {
+    const dateDifference = a.date.localeCompare(b.date)
+    if (dateDifference !== 0) return dateDifference
+    return a.id.localeCompare(b.id)
+  })
+
+  for (const event of events) {
+    if (!actionHistory.includes(event.actionType)) actionHistory.push(event.actionType)
+  }
+  if (!actionHistory.includes(matter.currentActionType)) actionHistory.push(matter.currentActionType)
+  return actionHistory
+}
+
 function matchesSearch(matter: Matter, search: string): boolean {
   const normalizedSearch = search.trim().toLocaleLowerCase()
   if (!normalizedSearch) return true
@@ -25,6 +44,7 @@ function matchesSearch(matter: Matter, search: string): boolean {
     matter.subject,
     matter.memberState,
     matter.legalBasis.join(' '),
+    ...matter.events.flatMap((event) => [event.label, event.detail, event.citation, event.sourceLocator]),
     ...matter.sources.map((source) => source.title),
   ]
     .filter(Boolean)
@@ -41,7 +61,9 @@ export function getLatestEvent(matter: Matter): Event {
       date: matter.lastUpdatedAt,
       label: 'Matter updated',
       detail: matter.summary,
-      actionType: matter.actionType,
+      actionType: matter.currentActionType,
+      actionSubtype: matter.currentActionSubtype,
+      sourceIds: [],
     }
   }
 
@@ -63,9 +85,14 @@ export function filterMatters(
     if (!includeAdjacent && !isAiActMatter(matter)) return false
     if (currentFilters.regime && currentFilters.regime !== 'all' && matter.regime !== currentFilters.regime) return false
     if (currentFilters.authorityLane && currentFilters.authorityLane !== 'all' && matter.authorityLane !== currentFilters.authorityLane) return false
-    if (currentFilters.actionType && currentFilters.actionType !== 'all' && matter.actionType !== currentFilters.actionType) return false
+    if (currentFilters.actionType && currentFilters.actionType !== 'all' && matter.currentActionType !== currentFilters.actionType) return false
+    if (currentFilters.actionType === 'investigation' && !isFormalInvestigation(matter)) return false
+    if (currentFilters.actionSubtype && currentFilters.actionSubtype !== 'all' && matter.currentActionSubtype !== currentFilters.actionSubtype) return false
+    if (currentFilters.actionHistory && currentFilters.actionHistory !== 'all' && !getMatterActionHistory(matter).includes(currentFilters.actionHistory)) return false
     if (currentFilters.status && currentFilters.status !== 'all' && matter.status !== currentFilters.status) return false
     if (currentFilters.memberState && currentFilters.memberState !== 'all' && matter.memberState !== currentFilters.memberState) return false
+    if (currentFilters.scope && currentFilters.scope !== 'all' && matter.scope !== currentFilters.scope) return false
+    if (currentFilters.evidenceLevel && currentFilters.evidenceLevel !== 'all' && !matter.sources.some((source) => source.evidenceLevel === currentFilters.evidenceLevel)) return false
     return matchesSearch(matter, currentFilters.search)
   })
 }
@@ -75,10 +102,10 @@ export function getOverviewMetrics(matters: Matter[]): OverviewMetrics {
 
   return {
     total: aiActMatters.length,
-    investigations: aiActMatters.filter((matter) => matter.actionType === 'investigation' && ['open', 'ongoing'].includes(matter.status)).length,
-    remediation: aiActMatters.filter((matter) => matter.actionType === 'remediation' && ['ongoing', 'follow-up'].includes(matter.status)).length,
-    penalties: aiActMatters.filter((matter) => matter.actionType === 'penalty' && matter.status === 'concluded').length,
-    guidance: aiActMatters.filter((matter) => matter.actionType === 'guidance' && matter.status === 'published').length,
+    investigations: aiActMatters.filter((matter) => isFormalInvestigation(matter) && ['open', 'ongoing'].includes(matter.status)).length,
+    remediation: aiActMatters.filter((matter) => matter.currentActionType === 'remediation' && ['ongoing', 'follow-up'].includes(matter.status)).length,
+    penalties: aiActMatters.filter((matter) => matter.currentActionType === 'penalty' && matter.status === 'concluded').length,
+    guidance: aiActMatters.filter((matter) => matter.currentActionType === 'guidance' && matter.status === 'published').length,
   }
 }
 
@@ -98,6 +125,7 @@ export function getAuthorityCounts(matters: Matter[], authorities: AuthorityProf
     isSinglePointOfContact: authority.isSinglePointOfContact,
     designationPending: authority.designationPending,
     source: authority.source,
+    coverage: authority.coverage,
   }))
 }
 
