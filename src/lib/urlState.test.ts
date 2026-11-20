@@ -6,7 +6,7 @@ describe('tracker URL state', () => {
     const state = {
       page: 'matters' as const,
       includeAdjacent: true,
-      filters: { search: 'frontier', authorityLane: 'ai-office' as const, actionType: 'investigation' as const, status: 'ongoing' as const, memberState: 'all', regime: 'ai-act' as const },
+      filters: { search: 'frontier', authorityLane: 'ai-office' as const, actionType: 'investigation' as const, actionSubtype: 'information-request' as const, actionHistory: 'all' as const, status: 'ongoing' as const, memberState: 'all', regime: 'ai-act' as const, scope: 'gpai' as const, evidenceLevel: 'official-announcement' as const },
     }
 
     expect(parseTrackerUrl(serializeTrackerUrl(state))).toEqual(state)
@@ -16,7 +16,7 @@ describe('tracker URL state', () => {
     expect(parseTrackerUrl('?page=not-a-page&adjacent=wat&action=not-an-action&regime=gdpr')).toEqual({
       page: 'overview',
       includeAdjacent: false,
-      filters: { search: '', authorityLane: 'all', actionType: 'all', status: 'all', memberState: 'all', regime: 'all' },
+      filters: { search: '', authorityLane: 'all', actionType: 'all', actionSubtype: 'all', actionHistory: 'all', status: 'all', memberState: 'all', regime: 'all', scope: 'all', evidenceLevel: 'all' },
     })
   })
 })
