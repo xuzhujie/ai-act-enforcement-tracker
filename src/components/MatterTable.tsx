@@ -53,7 +53,7 @@ export default function MatterTable({ matters, onSelect, sort = { key: 'date', d
                   </button>
                 </td>
                 <td><span className="authority-cell">{matter.authorityName}</span></td>
-                <td><Badge kind="action" value={matter.actionType} compact /></td>
+                <td><Badge kind="action" value={matter.currentActionType} subtype={matter.currentActionSubtype} compact /></td>
                 <td><Badge kind="status" value={matter.status} compact /></td>
                 <td><span className="legal-basis-cell">{matter.legalBasis.join(' · ')}</span></td>
                 <td><a className="source-link" href={matter.sources[0]?.url} target="_blank" rel="noreferrer">查看 <Icon name="external-link" size={13} /></a></td>
