@@ -34,4 +34,16 @@ describe('AI Act tracker app entry', () => {
     fireEvent.click(screen.getByRole('button', { name: '查看事项台账' }))
     expect(screen.getByRole('heading', { name: '事项台账' })).toBeTruthy()
   })
+
+  it('restores page and filters from browser history', () => {
+    render(<App />)
+
+    window.history.pushState({}, '', '/?page=matters&action=investigation&history=remediation&scope=gpai')
+    fireEvent.popState(window)
+
+    expect(screen.getByRole('heading', { name: '事项台账' })).toBeTruthy()
+    expect((screen.getByRole('combobox', { name: '动作类型' }) as HTMLSelectElement).value).toBe('investigation')
+    expect((screen.getByRole('combobox', { name: '动作历史' }) as HTMLSelectElement).value).toBe('remediation')
+    expect((screen.getByRole('combobox', { name: '范围' }) as HTMLSelectElement).value).toBe('gpai')
+  })
 })

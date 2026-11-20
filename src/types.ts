@@ -4,6 +4,15 @@ export type AuthorityLane = 'ai-office' | 'member-state-msa' | 'edps' | 'other'
 
 export type ActionType = 'investigation' | 'remediation' | 'penalty' | 'guidance'
 
+export type ActionSubtype =
+  | 'formal-investigation'
+  | 'information-request'
+  | 'incident-review'
+  | 'corrective-measure'
+  | 'sanction-decision'
+  | 'guidance'
+  | 'authority-infrastructure'
+
 export type MatterStatus = 'open' | 'ongoing' | 'concluded' | 'follow-up' | 'published'
 
 export type EvidenceLevel = 'decision' | 'official-announcement' | 'authority-page' | 'secondary'
@@ -38,6 +47,8 @@ export type SourceRefreshRecord = {
   contentType?: string
   title?: string
   contentHash?: string
+  previousContentHash?: string
+  contentChanged?: boolean
   attempts?: number
   retryAfterSeconds?: number
   ok: boolean
@@ -50,6 +61,17 @@ export type SourceRefreshSnapshot = {
 }
 
 export type SourceHealth = 'fresh' | 'stale' | 'error' | 'unverified'
+
+export type CoverageStatus = 'case-found' | 'searched-no-case' | 'directory-only' | 'not-reviewed'
+
+export type CoverageRecord = {
+  status: CoverageStatus
+  checkedAt: string
+  sourceIds: string[]
+  queryScope: string
+  resultCount: number
+  limitation: string
+}
 
 export type ReviewStatus = 'verified' | 'needs-review' | 'rejected'
 
@@ -73,6 +95,10 @@ export type Event = {
   label: string
   detail: string
   actionType: ActionType
+  actionSubtype: ActionSubtype
+  sourceIds: string[]
+  citation?: string
+  sourceLocator?: string
   isTrackerCapture?: boolean
 }
 
@@ -87,7 +113,8 @@ export type Matter = {
   primaryAuthorityId: string
   supportingAuthorities?: string[]
   memberState?: string
-  actionType: ActionType
+  currentActionType: ActionType
+  currentActionSubtype: ActionSubtype
   status: MatterStatus
   subject: string
   scope: Scope
@@ -101,6 +128,7 @@ export type Matter = {
   dateBasis?: 'source-published' | 'tracker-capture'
   events: Event[]
   sources: Source[]
+  coverage?: CoverageRecord
 }
 
 export type AuthorityProfile = {
@@ -113,15 +141,20 @@ export type AuthorityProfile = {
   isSinglePointOfContact?: boolean
   designationPending?: boolean
   description?: string
+  coverage?: CoverageRecord
 }
 
 export type FilterState = {
   search: string
   authorityLane?: AuthorityLane | 'all'
   actionType?: ActionType | 'all'
+  actionSubtype?: ActionSubtype | 'all'
+  actionHistory?: ActionType | 'all'
   status?: MatterStatus | 'all'
   memberState?: string | 'all'
   regime?: Regime | 'all'
+  scope?: Scope | 'all'
+  evidenceLevel?: EvidenceLevel | 'all'
 }
 
 export type OverviewMetrics = {
@@ -141,4 +174,5 @@ export type AuthorityCount = {
   isSinglePointOfContact?: boolean
   designationPending?: boolean
   source: Source
+  coverage?: CoverageRecord
 }

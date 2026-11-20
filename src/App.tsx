@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import AppShell from './components/AppShell'
 import AboutDialog from './components/AboutDialog'
 import MatterDrawer from './components/MatterDrawer'
@@ -8,7 +8,7 @@ import { sourceRegistry } from './data/sourceRegistry'
 import { filterMatters, getOverviewMetrics } from './lib/filters'
 import { validateTrackerData } from './lib/dataValidation'
 import { editorialReview, getReviewableMatters, getReviewSummary, validateEditorialReview } from './lib/editorialReview'
-import { parseTrackerUrl, serializeTrackerUrl } from './lib/urlState'
+import { DEFAULT_FILTERS, parseTrackerUrl, serializeTrackerUrl } from './lib/urlState'
 import AuthoritiesPage from './pages/AuthoritiesPage'
 import ExcludedPage from './pages/ExcludedPage'
 import MattersPage from './pages/MattersPage'
@@ -26,12 +26,13 @@ export default function App() {
   const [filters, setFilters] = useState<FilterState>(urlState.filters)
   const [selectedMatterId, setSelectedMatterId] = useState<string | null>(null)
   const [aboutOpen, setAboutOpen] = useState(false)
+  const hasSyncedUrlRef = useRef(false)
 
   const reviewedSeedMatters = useMemo(() => getReviewableMatters(seedMatters, editorialReview), [])
   const visibleMatters = useMemo(() => filterMatters(reviewedSeedMatters, filters, includeAdjacent), [filters, includeAdjacent, reviewedSeedMatters])
   const metrics = useMemo(() => getOverviewMetrics(visibleMatters), [visibleMatters])
   const validationIssues = useMemo(() => [
-    ...validateTrackerData(seedMatters, authorities, sourceRegistry),
+    ...validateTrackerData(seedMatters, authorities, sourceRegistry, sourceSnapshot),
     ...validateEditorialReview(seedMatters, editorialReview),
   ], [])
   const reviewSummary = useMemo(() => getReviewSummary(seedMatters, editorialReview), [])
@@ -45,12 +46,30 @@ export default function App() {
   }, [selectedMatterId, selectedMatterIsVisible])
 
   useEffect(() => {
-    const query = serializeTrackerUrl({ page: currentPage, includeAdjacent, filters: { ...urlState.filters, ...filters } as Required<FilterState> })
-    window.history.replaceState(null, '', `${window.location.pathname}${query}`)
-  }, [currentPage, includeAdjacent, filters, urlState.filters])
+    const query = serializeTrackerUrl({ page: currentPage, includeAdjacent, filters: { ...DEFAULT_FILTERS, ...filters } })
+    const nextUrl = `${window.location.pathname}${query}`
+    const currentUrl = `${window.location.pathname}${window.location.search}`
+    if (currentUrl !== nextUrl) {
+      if (hasSyncedUrlRef.current) window.history.pushState(null, '', nextUrl)
+      else window.history.replaceState(null, '', nextUrl)
+    }
+    hasSyncedUrlRef.current = true
+  }, [currentPage, includeAdjacent, filters])
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const next = parseTrackerUrl(window.location.search)
+      setCurrentPage(next.page)
+      setIncludeAdjacent(next.includeAdjacent)
+      setFilters(next.filters)
+      setSelectedMatterId(null)
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
 
   const handleFiltersChange = (nextFilters: FilterState) => setFilters(nextFilters)
-  const handleClearFilters = () => setFilters({ search: '', authorityLane: 'all', actionType: 'all', status: 'all', memberState: 'all', regime: 'all' })
+  const handleClearFilters = () => setFilters({ ...DEFAULT_FILTERS })
   const handleIncludeAdjacentChange = (nextIncludeAdjacent: boolean) => {
     setIncludeAdjacent(nextIncludeAdjacent)
     if (!nextIncludeAdjacent) setFilters((current) => ({ ...current, regime: 'all' }))
@@ -59,8 +78,15 @@ export default function App() {
     setCurrentPage(page)
     setSelectedMatterId(null)
   }
+  const handleAuthoritySelect = (authorityId: string) => {
+    const authority = authorities.find((candidate) => candidate.id === authorityId)
+    const directoryAuthority = authorityDirectory.find((candidate) => candidate.id === authorityId)
+    setIncludeAdjacent(false)
+    setFilters({ ...DEFAULT_FILTERS, authorityLane: authority?.lane ?? 'all', memberState: directoryAuthority?.country ?? 'all' })
+    handlePageChange('matters')
+  }
   const handleSearchChange = (search: string) => setFilters((current) => ({ ...current, search }))
-  const hasActiveFilters = Boolean(filters.search || filters.authorityLane !== 'all' || filters.actionType !== 'all' || filters.status !== 'all' || filters.memberState !== 'all' || filters.regime !== 'all')
+  const hasActiveFilters = Boolean(filters.search || filters.authorityLane !== 'all' || filters.actionType !== 'all' || filters.actionSubtype !== 'all' || filters.actionHistory !== 'all' || filters.status !== 'all' || filters.memberState !== 'all' || filters.regime !== 'all' || filters.scope !== 'all' || filters.evidenceLevel !== 'all')
 
   return (
     <AppShell
@@ -75,7 +101,7 @@ export default function App() {
     >
       {currentPage === 'overview' && <OverviewPage matters={visibleMatters} authorities={authorities} metrics={metrics} onSelectMatter={setSelectedMatterId} hasActiveFilters={hasActiveFilters} onClearFilters={handleClearFilters} onOpenMatters={() => handlePageChange('matters')} />}
       {currentPage === 'matters' && <MattersPage matters={visibleMatters} filters={filters} includeAdjacent={includeAdjacent} memberStates={authorityDirectory.map((authority) => authority.country)} onFiltersChange={handleFiltersChange} onClearFilters={handleClearFilters} onSelectMatter={setSelectedMatterId} />}
-      {currentPage === 'authorities' && <AuthoritiesPage matters={reviewedSeedMatters} authorities={authorities} />}
+      {currentPage === 'authorities' && <AuthoritiesPage matters={reviewedSeedMatters} authorities={authorities} onSelectAuthority={handleAuthoritySelect} />}
       {currentPage === 'excluded' && <ExcludedPage matters={reviewedSeedMatters.filter((matter) => matter.regime !== 'ai-act')} onSelectMatter={setSelectedMatterId} />}
       {currentPage === 'sources' && <SourcesPage matters={seedMatters} sources={sourceRegistry} snapshot={sourceSnapshot} validationIssues={validationIssues} reviewSummary={reviewSummary} />}
       <span className="sr-only" aria-live="polite">{selectedMatter ? `已选择 ${selectedMatter.shortTitle}` : ''}</span>
