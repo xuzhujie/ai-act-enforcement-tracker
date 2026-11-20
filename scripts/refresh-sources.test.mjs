@@ -58,18 +58,53 @@ describe('refresh-sources', () => {
       timeoutMs: 5000,
       retries: 2,
       retryDelayMs: 500,
+      concurrency: 4,
     })
+  })
+
+  it('limits concurrent refreshes and exposes changed content hashes', async () => {
+    let active = 0
+    let maxActive = 0
+    const sources = Array.from({ length: 5 }, (_, index) => ({ id: `source-${index}`, url: `https://example.com/${index}` }))
+    const snapshot = await refreshSources({
+      sources,
+      concurrency: 2,
+      now: new Date('2026-11-20T00:00:00Z'),
+      retries: 0,
+      previousSnapshot: { records: [{ sourceId: 'source-0', contentHash: 'old-hash' }] },
+      fetchImpl: async () => {
+        active += 1
+        maxActive = Math.max(maxActive, active)
+        await new Promise((resolve) => setTimeout(resolve, 0))
+        active -= 1
+        return { ok: true, status: 200, headers: { get: () => 'text/html' }, text: async () => '<title>Changed</title>' }
+      },
+    })
+
+    expect(maxActive).toBeLessThanOrEqual(2)
+    expect(snapshot.records).toHaveLength(5)
+    expect(snapshot.records[0]).toEqual(expect.objectContaining({ contentChanged: true, previousContentHash: 'old-hash' }))
   })
 
   it('rejects duplicate or unsafe registry entries and unknown snapshot sources', () => {
     const issues = validateRegistryAndSnapshot(
       [
-        { id: 'duplicate', url: 'https://example.com/one', evidenceLevel: 'authority-page' },
+      { id: 'duplicate', url: 'https://example.com/one', evidenceLevel: 'authority-page' },
         { id: 'duplicate', url: 'http://example.com/two', evidenceLevel: 'not-valid' },
       ],
       { generatedAt: '2026-11-20T00:00:00Z', records: [{ sourceId: 'missing', ok: true }] },
     )
 
-    expect(issues.map((issue) => issue.code)).toEqual(expect.arrayContaining(['duplicate-source-id', 'source-url-not-https', 'invalid-evidence-level', 'snapshot-source-not-in-registry']))
+    expect(issues.map((issue) => issue.code)).toEqual(expect.arrayContaining(['duplicate-source-id', 'source-url-not-https', 'invalid-evidence-level', 'snapshot-source-not-in-registry', 'missing-snapshot-record']))
+  })
+
+  it('rejects a successful but stale source snapshot', () => {
+    const issues = validateRegistryAndSnapshot(
+      [{ id: 'stale', url: 'https://example.com/stale', evidenceLevel: 'authority-page', refreshIntervalDays: 7 }],
+      { generatedAt: '2026-11-20T00:00:00Z', records: [{ sourceId: 'stale', checkedAt: '2026-11-01T00:00:00Z', ok: true }] },
+      new Date('2026-11-20T00:00:00Z'),
+    )
+
+    expect(issues.map((issue) => issue.code)).toContain('stale-source-record')
   })
 })
