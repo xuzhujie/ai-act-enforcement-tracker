@@ -11,8 +11,10 @@ describe('MatterDrawer', () => {
     expect(screen.getByText('收录理由')).toBeTruthy()
     expect(screen.getByText(aiActMatters[0].inclusionNote)).toBeTruthy()
     expect(screen.getByText('最后核验')).toBeTruthy()
-    expect(screen.getByText(aiActMatters[0].sources[0].title)).toBeTruthy()
+    expect(screen.getAllByText(aiActMatters[0].sources[0].title).length).toBeGreaterThan(1)
     expect(screen.getByText('Guidance captured')).toBeTruthy()
+    expect(screen.getByText(/事件证据/)).toBeTruthy()
+    expect(screen.getByRole('link', { name: `事件证据：${aiActMatters[0].sources[0].title}` })).toBeTruthy()
   })
 
   it('shows supporting authorities and restores focus while trapping the drawer', () => {
