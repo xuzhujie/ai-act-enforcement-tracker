@@ -1,3 +1,4 @@
+import type { ActionSubtype } from '../types'
 import Icon, { type IconName } from './icons'
 
 export type BadgeKind = 'action' | 'status' | 'regime' | 'evidence'
@@ -5,6 +6,7 @@ export type BadgeKind = 'action' | 'status' | 'regime' | 'evidence'
 type BadgeProps = {
   kind: BadgeKind
   value: string
+  subtype?: ActionSubtype
   compact?: boolean
 }
 
@@ -44,6 +46,16 @@ const valueLabels: Record<string, string> = {
   secondary: '二手来源',
 }
 
+const subtypeLabels: Record<ActionSubtype, string> = {
+  'formal-investigation': '正式调查',
+  'information-request': '信息请求',
+  'incident-review': '严重事件复核',
+  'corrective-measure': '整改 / 纠正措施',
+  'sanction-decision': '处罚 / 决定',
+  guidance: '指南 / 实施',
+  'authority-infrastructure': '机关基础设施',
+}
+
 function getIcon(kind: BadgeKind, value: string): IconName {
   if (kind === 'action') return actionIcons[value] ?? 'spark'
   if (kind === 'evidence') return value === 'decision' ? 'gavel' : 'file'
@@ -51,7 +63,7 @@ function getIcon(kind: BadgeKind, value: string): IconName {
   return value === 'concluded' || value === 'published' ? 'check' : 'info'
 }
 
-export default function Badge({ kind, value, compact = false }: BadgeProps) {
+export default function Badge({ kind, value, subtype, compact = false }: BadgeProps) {
   const className = [
     'badge',
     `badge-${kind}`,
@@ -64,7 +76,7 @@ export default function Badge({ kind, value, compact = false }: BadgeProps) {
   return (
     <span className={className}>
       <Icon name={getIcon(kind, value)} size={compact ? 13 : 14} />
-      <span>{valueLabels[value] ?? value}</span>
+      <span>{kind === 'action' && subtype ? subtypeLabels[subtype] : valueLabels[value] ?? value}</span>
     </span>
   )
 }
