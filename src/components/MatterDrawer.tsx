@@ -95,7 +95,7 @@ export default function MatterDrawer({ matter, authorities, onClose }: MatterDra
         </div>
 
         <div className="drawer-scroll">
-          <div className="drawer-badges"><Badge kind="action" value={matter.actionType} /><Badge kind="status" value={matter.status} /><Badge kind="regime" value={matter.regime} /></div>
+          <div className="drawer-badges"><Badge kind="action" value={matter.currentActionType} subtype={matter.currentActionSubtype} /><Badge kind="status" value={matter.status} /><Badge kind="regime" value={matter.regime} /></div>
 
           <section className="drawer-section drawer-summary">
             <p>{matter.summary}</p>
@@ -119,7 +119,7 @@ export default function MatterDrawer({ matter, authorities, onClose }: MatterDra
 
           <section className="drawer-section">
             <div className="drawer-section-heading"><h3>程序事件</h3><span>{matter.events.length} 条</span></div>
-            <Timeline events={matter.events} />
+            <Timeline events={matter.events} sources={matter.sources} />
           </section>
 
           <section className="drawer-section">
