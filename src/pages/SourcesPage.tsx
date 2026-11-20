@@ -23,6 +23,7 @@ export default function SourcesPage({ matters, sources: sourceInput, snapshot = 
   const sources = sourceInput ?? Array.from(new Map(matters.flatMap((matter) => matter.sources).map((source) => [source.id, source])).values())
   const errorIssues = validationIssues.filter((issue) => issue.severity === 'error')
   const refreshFailures = snapshot.records.filter((record) => !record.ok)
+  const changedRecords = snapshot.records.filter((record) => record.contentChanged)
   const snapshotDate = snapshot.generatedAt ? snapshot.generatedAt.slice(0, 10) : '—'
 
   return (
@@ -53,6 +54,15 @@ export default function SourcesPage({ matters, sources: sourceInput, snapshot = 
           </div>
         </section>
       )}
+      {changedRecords.length > 0 && (
+        <section className="panel data-health-callout data-health-change">
+          <div className="callout-icon"><Icon name="info" size={20} /></div>
+          <div>
+            <h2>来源内容已变化 {changedRecords.length} 个</h2>
+            <p>可访问不等于内容未变；以下变化需要编辑复核：{changedRecords.map((record) => sources.find((source) => source.id === record.sourceId)?.title ?? record.sourceId).join(' · ')}</p>
+          </div>
+        </section>
+      )}
       <section className={`panel data-health-callout ${errorIssues.length > 0 ? 'data-health-error' : ''}`}>
         <div className="callout-icon"><Icon name={errorIssues.length > 0 ? 'info' : 'check'} size={20} /></div>
         <div>
@@ -63,14 +73,15 @@ export default function SourcesPage({ matters, sources: sourceInput, snapshot = 
       <section className="panel sources-list-panel">
         <div className="panel-heading"><div><h2>已使用来源</h2><p>按来源注册表展示；健康状态来自最近一次可复核的刷新快照。</p></div><span className="table-count">official first</span></div>
         <div className="sources-list">
-          {sources.map((source) => (
-            <a className="source-row" href={source.url} target="_blank" rel="noreferrer" key={source.id}>
+          {sources.map((source) => {
+            const record = getRefreshRecord(snapshot, source.id)
+            return <a className="source-row" href={source.url} target="_blank" rel="noreferrer" key={source.id}>
               <div className="source-row-icon"><Icon name="file" size={17} /></div>
               <div className="source-row-copy"><strong>{source.title}</strong><span>{source.publisher}{source.publishedAt ? ` · ${source.publishedAt}` : ''}</span></div>
-              <div className="source-row-status"><Badge kind="evidence" value={source.evidenceLevel} compact /><span className={`source-health source-health-${getSourceHealth(source, getRefreshRecord(snapshot, source.id))}`}>{healthLabels[getSourceHealth(source, getRefreshRecord(snapshot, source.id))]}</span></div>
+              <div className="source-row-status"><Badge kind="evidence" value={source.evidenceLevel} compact /><span className={`source-health source-health-${getSourceHealth(source, record)}`}>{healthLabels[getSourceHealth(source, record)]}</span>{record?.contentChanged && <span className="source-health source-health-changed">内容已变化</span>}</div>
               <Icon name="external-link" size={15} />
             </a>
-          ))}
+          })}
         </div>
       </section>
     </div>
