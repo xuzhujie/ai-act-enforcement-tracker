@@ -1,4 +1,4 @@
-import type { AuthorityLane, ActionType, FilterState, MatterStatus } from '../types'
+import type { ActionSubtype, ActionType, AuthorityLane, EvidenceLevel, FilterState, MatterStatus, Scope } from '../types'
 import Icon from './icons'
 
 type FilterBarProps = {
@@ -24,6 +24,35 @@ const actionOptions: Array<{ value: ActionType | 'all'; label: string }> = [
   { value: 'guidance', label: '指南 / 实施' },
 ]
 
+const scopeOptions: Array<{ value: Scope | 'all'; label: string }> = [
+  { value: 'all', label: '全部范围' },
+  { value: 'gpai', label: 'GPAI' },
+  { value: 'prohibited-practices', label: '禁止性实践' },
+  { value: 'transparency', label: '透明度' },
+  { value: 'high-risk', label: '高风险' },
+  { value: 'governance', label: '治理 / 机构' },
+  { value: 'other', label: '其他范围' },
+]
+
+const subtypeOptions: Array<{ value: ActionSubtype | 'all'; label: string }> = [
+  { value: 'all', label: '全部动作细分' },
+  { value: 'formal-investigation', label: '正式调查' },
+  { value: 'information-request', label: '信息请求' },
+  { value: 'incident-review', label: '严重事件复核' },
+  { value: 'corrective-measure', label: '整改措施' },
+  { value: 'sanction-decision', label: '处罚 / 决定' },
+  { value: 'guidance', label: '指南 / 实施' },
+  { value: 'authority-infrastructure', label: '机关基础设施' },
+]
+
+const evidenceOptions: Array<{ value: EvidenceLevel | 'all'; label: string }> = [
+  { value: 'all', label: '全部证据等级' },
+  { value: 'decision', label: '正式决定' },
+  { value: 'official-announcement', label: '官方公告' },
+  { value: 'authority-page', label: '主管机关页面' },
+  { value: 'secondary', label: '二手来源' },
+]
+
 const statusOptions: Array<{ value: MatterStatus | 'all'; label: string }> = [
   { value: 'all', label: '全部状态' },
   { value: 'open', label: '开放' },
@@ -34,7 +63,7 @@ const statusOptions: Array<{ value: MatterStatus | 'all'; label: string }> = [
 ]
 
 function hasActiveFilters(filters: FilterState): boolean {
-  return Boolean(filters.search || filters.authorityLane !== 'all' || filters.actionType !== 'all' || filters.status !== 'all' || filters.memberState !== 'all' || filters.regime !== 'all')
+  return Boolean(filters.search || filters.authorityLane !== 'all' || filters.actionType !== 'all' || filters.actionSubtype !== 'all' || filters.actionHistory !== 'all' || filters.status !== 'all' || filters.memberState !== 'all' || filters.regime !== 'all' || filters.scope !== 'all' || filters.evidenceLevel !== 'all')
 }
 
 export default function FilterBar({ filters, includeAdjacent, memberStates, onChange, onClear }: FilterBarProps) {
@@ -58,6 +87,19 @@ export default function FilterBar({ filters, includeAdjacent, memberStates, onCh
           <span className="sr-only">动作类型</span>
           <select value={filters.actionType ?? 'all'} onChange={(event) => update('actionType', event.target.value as FilterState['actionType'])}>
             {actionOptions.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
+          </select>
+        </label>
+        <label className="select-field">
+          <span className="sr-only">动作历史</span>
+          <select value={filters.actionHistory ?? 'all'} onChange={(event) => update('actionHistory', event.target.value as FilterState['actionHistory'])}>
+            <option value="all">历史动作不限</option>
+            {actionOptions.slice(1).map((option) => <option value={option.value} key={option.value}>{`曾经历：${option.label}`}</option>)}
+          </select>
+        </label>
+        <label className="select-field">
+          <span className="sr-only">动作细分</span>
+          <select value={filters.actionSubtype ?? 'all'} onChange={(event) => update('actionSubtype', event.target.value as FilterState['actionSubtype'])}>
+            {subtypeOptions.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
           </select>
         </label>
         <label className="select-field">
@@ -87,6 +129,18 @@ export default function FilterBar({ filters, includeAdjacent, memberStates, onCh
             </select>
           </label>
         )}
+        <label className="select-field">
+          <span className="sr-only">范围</span>
+          <select value={filters.scope ?? 'all'} onChange={(event) => update('scope', event.target.value as FilterState['scope'])}>
+            {scopeOptions.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
+          </select>
+        </label>
+        <label className="select-field">
+          <span className="sr-only">证据等级</span>
+          <select value={filters.evidenceLevel ?? 'all'} onChange={(event) => update('evidenceLevel', event.target.value as FilterState['evidenceLevel'])}>
+            {evidenceOptions.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
+          </select>
+        </label>
       </div>
       <div className="filter-summary">
         {includeAdjacent && <span className="adjacent-note"><Icon name="layers" size={13} /> 相邻制度可见，但不计入 AI Act KPI</span>}
