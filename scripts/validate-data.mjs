@@ -15,7 +15,7 @@ function isHttps(url) {
   return typeof url === 'string' && /^https:\/\/[^\s]+$/i.test(url)
 }
 
-export function validateRegistryAndSnapshot(registry, snapshot) {
+export function validateRegistryAndSnapshot(registry, snapshot, now = new Date()) {
   const issues = []
   const ids = new Set()
   for (const source of registry) {
@@ -32,7 +32,18 @@ export function validateRegistryAndSnapshot(registry, snapshot) {
     if (!ids.has(record.sourceId)) issues.push(issue('snapshot-source-not-in-registry', `snapshot.${record.sourceId}`, `Snapshot source is not present in registry: ${record.sourceId}`))
     if (record.checkedAt && Number.isNaN(new Date(record.checkedAt).getTime())) issues.push(issue('invalid-snapshot-date', `snapshot.${record.sourceId}.checkedAt`, `Invalid snapshot date: ${record.checkedAt}`))
     if (record.ok === false && !record.error) issues.push(issue('failed-snapshot-without-error', `snapshot.${record.sourceId}`, 'A failed source snapshot must retain an error message'))
+    const source = registry.find((candidate) => candidate.id === record.sourceId)
+    if (source && record.ok && record.checkedAt) {
+      const checkedAt = new Date(record.checkedAt)
+      const intervalDays = source.refreshIntervalDays ?? 30
+      const ageDays = (now.getTime() - checkedAt.getTime()) / (1000 * 60 * 60 * 24)
+      if (!Number.isNaN(checkedAt.getTime()) && ageDays > intervalDays) issues.push(issue('stale-source-record', `snapshot.${record.sourceId}.checkedAt`, `Source refresh record is ${Math.floor(ageDays)} days old; maximum is ${intervalDays} days`))
+    }
   }
+  for (const source of registry) {
+    if (!recordIds.has(source.id)) issues.push(issue('missing-snapshot-record', `snapshot.${source.id}`, `No refresh record exists for registry source: ${source.id}`))
+  }
+  if (!snapshot.generatedAt || Number.isNaN(new Date(snapshot.generatedAt).getTime())) issues.push(issue('invalid-snapshot-generated-at', 'snapshot.generatedAt', `Invalid snapshot generatedAt: ${snapshot.generatedAt}`))
   return issues
 }
 
