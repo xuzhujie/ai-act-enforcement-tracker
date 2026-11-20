@@ -20,7 +20,8 @@ const baseMatter: Matter = {
   authorityLane: 'ai-office',
   authorityName: 'European Commission · AI Office',
   primaryAuthorityId: 'ai-office',
-  actionType: 'guidance',
+  currentActionType: 'guidance',
+  currentActionSubtype: 'guidance',
   status: 'published',
   subject: 'Test subject',
   scope: 'governance',
@@ -48,6 +49,32 @@ describe('validateTrackerData', () => {
       'source-url-not-https',
       'missing-exclusion-reason',
       'unknown-supporting-authority',
+    ]))
+  })
+
+  it('flags broken authority and event evidence joins, invalid event dates, missing citations, and incomplete snapshots', () => {
+    const matter = {
+      ...baseMatter,
+      primaryAuthorityId: 'missing-authority',
+      events: [{
+        id: 'event-invalid',
+        date: 'not-a-date',
+        label: 'Published event',
+        detail: 'Event detail',
+        actionType: 'guidance' as const,
+        actionSubtype: 'guidance' as const,
+        sourceIds: ['missing-source'],
+        isTrackerCapture: false,
+      }],
+    }
+    const issues = validateTrackerData([matter], authorities, [source], { generatedAt: '2026-11-20T00:00:00Z', records: [] })
+
+    expect(issues.map((issue) => issue.code)).toEqual(expect.arrayContaining([
+      'unknown-primary-authority',
+      'invalid-event-date',
+      'unknown-event-source',
+      'missing-event-citation',
+      'missing-snapshot-record',
     ]))
   })
 })
