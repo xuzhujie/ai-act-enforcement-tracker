@@ -9,6 +9,10 @@ permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: refresh-official-sources
+  cancel-in-progress: true
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
@@ -18,12 +22,12 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - name: Install dependencies
         run: npm ci
       - name: Refresh official sources
-        run: npm run refresh:data -- --allow-failures --retries 2 --retry-delay-ms 500
+        run: npm run refresh:data -- --allow-failures --retries 2 --retry-delay-ms 500 --concurrency 4
       - name: Validate refreshed snapshot
         run: npm run validate:data
       - name: Open refresh pull request
