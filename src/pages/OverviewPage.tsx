@@ -87,7 +87,7 @@ export default function OverviewPage({ matters, authorities, metrics, onSelectMa
                     <tr className={isAdjacent ? 'adjacent-row' : undefined} key={matter.id}>
                       <td><span className="date-stack"><time dateTime={event.date}>{event.date}</time>{event.isTrackerCapture && <span className="date-basis">tracker capture</span>}</span></td>
                       <td><span className="authority-cell">{matter.authorityName}</span></td>
-                      <td><div className="activity-badges"><button className="table-action" type="button" onClick={() => onSelectMatter(matter.id)}><Badge kind="action" value={matter.actionType} compact /></button>{isAdjacent && <Badge kind="regime" value={matter.regime} compact />}</div></td>
+                      <td><div className="activity-badges"><button className="table-action" type="button" onClick={() => onSelectMatter(matter.id)}><Badge kind="action" value={event.actionType} subtype={event.actionSubtype} compact /></button>{isAdjacent && <Badge kind="regime" value={matter.regime} compact />}</div></td>
                       <td><button className="matter-link" type="button" onClick={() => onSelectMatter(matter.id)}>{matter.shortTitle}</button></td>
                       <td><Badge kind="status" value={matter.status} compact /></td>
                       <td><a className="source-link" href={matter.sources[0]?.url} target="_blank" rel="noreferrer">来源 <Icon name="external-link" size={13} /></a></td>
