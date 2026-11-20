@@ -1,6 +1,7 @@
 import type { Matter } from '../types'
+import { getLatestEvent, getMatterActionHistory } from './filters'
 
-const headers = ['Matter ID', 'Regime', 'Title', 'Authority lane', 'Authority', 'Action', 'Status', 'Subject', 'Scope', 'Legal basis', 'First published', 'Last updated', 'Last verified', 'Source URL']
+const headers = ['Matter ID', 'Regime', 'Title', 'Authority lane', 'Authority', 'Current action', 'Current action subtype', 'Action history', 'Status', 'Subject', 'Scope', 'Legal basis', 'First published', 'Last updated', 'Last verified', 'Latest event ID', 'Latest event', 'Latest event action', 'Latest event subtype', 'Latest event source IDs', 'Latest event citation', 'Latest event locator', 'Source URL']
 
 function escapeCell(value: unknown): string {
   const text = String(value ?? '')
@@ -8,13 +9,17 @@ function escapeCell(value: unknown): string {
 }
 
 export function mattersToCsv(matters: Matter[]): string {
-  const rows = matters.map((matter) => [
+  const rows = matters.map((matter) => {
+    const latestEvent = getLatestEvent(matter)
+    return [
     matter.id,
     matter.regime,
     matter.title,
     matter.authorityLane,
     matter.authorityName,
-    matter.actionType,
+    matter.currentActionType,
+    matter.currentActionSubtype,
+    getMatterActionHistory(matter).join(' · '),
     matter.status,
     matter.subject,
     matter.scope,
@@ -22,8 +27,16 @@ export function mattersToCsv(matters: Matter[]): string {
     matter.firstPublishedAt,
     matter.lastUpdatedAt,
     matter.lastVerifiedAt,
+    latestEvent.id,
+    latestEvent.label,
+    latestEvent.actionType,
+    latestEvent.actionSubtype,
+    latestEvent.sourceIds.join(' · '),
+    latestEvent.citation,
+    latestEvent.sourceLocator,
     matter.sources.map((source) => source.url).join(' · '),
-  ].map(escapeCell).join(','))
+    ].map(escapeCell).join(',')
+  })
   return `\ufeff${headers.join(',')}\n${rows.join('\n')}\n`
 }
 
