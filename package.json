@@ -10,7 +10,8 @@
     "test": "vitest",
     "refresh:data": "node scripts/refresh-sources.mjs",
     "validate:data": "node scripts/validate-data.mjs",
-    "check": "npm run validate:data && npm test -- --run && npm run build"
+    "check": "npm run validate:data && npm test -- --run && npm run build && npm run smoke",
+    "smoke": "node scripts/smoke-test.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.4",
