@@ -1,0 +1,113 @@
+[
+  {
+    "id": "source-ai-governance",
+    "title": "Governance and enforcement of the AI Act",
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/ai-act-governance-and-enforcement",
+    "publisher": "European Commission · DG CONNECT",
+    "evidenceLevel": "authority-page",
+    "refreshIntervalDays": 7
+  },
+  {
+    "id": "source-ai-enforcement-framework",
+    "title": "The enforcement framework of the AI Act",
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/enforcement-ai-act",
+    "publisher": "European Commission · DG CONNECT",
+    "evidenceLevel": "authority-page",
+    "refreshIntervalDays": 7
+  },
+  {
+    "id": "source-market-surveillance",
+    "title": "Market Surveillance Authorities under the AI Act",
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/market-surveillance-authorities-under-ai-act",
+    "publisher": "European Commission · DG CONNECT",
+    "publishedAt": "2026-11-09",
+    "evidenceLevel": "authority-page",
+    "refreshIntervalDays": 7
+  },
+  {
+    "id": "source-ai-office",
+    "title": "European AI Office",
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/ai-office",
+    "publisher": "European Commission · DG CONNECT",
+    "evidenceLevel": "authority-page",
+    "refreshIntervalDays": 7
+  },
+  {
+    "id": "source-gpai-qa",
+    "title": "General-Purpose AI Models in the AI Act — Questions & Answers",
+    "url": "https://digital-strategy.ec.europa.eu/en/faqs/general-purpose-ai-models-ai-act-questions-answers",
+    "publisher": "European Commission · DG CONNECT",
+    "evidenceLevel": "authority-page",
+    "refreshIntervalDays": 7
+  },
+  {
+    "id": "source-fundamental-rights-request-channel",
+    "title": "AI Act request channel for national fundamental rights authorities",
+    "url": "https://digital-strategy.ec.europa.eu/en/miscellaneous/ai-act-request-channel-national-fundamental-rights-authorities",
+    "publisher": "European Commission · DG CONNECT",
+    "publishedAt": "2026-10-20",
+    "evidenceLevel": "official-announcement",
+    "refreshIntervalDays": 7
+  },
+  {
+    "id": "source-independent-expert-support",
+    "title": "AI Act enforcement gets independent expert support",
+    "url": "https://digital-strategy.ec.europa.eu/en/news/ai-act-enforcement-gets-independent-expert-support",
+    "publisher": "European Commission · DG CONNECT",
+    "publishedAt": "2026-06-01",
+    "evidenceLevel": "official-announcement",
+    "refreshIntervalDays": 7
+  },
+  {
+    "id": "source-ai-scientific-panel",
+    "title": "Special meeting of the AI Scientific Panel",
+    "url": "https://digital-strategy.ec.europa.eu/en/news/special-meeting-ai-scientific-panel",
+    "publisher": "European Commission · DG CONNECT",
+    "publishedAt": "2026-10-12",
+    "evidenceLevel": "official-announcement",
+    "refreshIntervalDays": 7
+  },
+  {
+    "id": "source-ai-enforcement-start",
+    "title": "Commission starts enforcing AI Act rules and new transparency requirements",
+    "url": "https://ec.europa.eu/commission/presscorner/api/files/document/print/en/ip_26_1714/IP_26_1714_EN.pdf",
+    "publisher": "European Commission · Press corner",
+    "publishedAt": "2026-07-31",
+    "evidenceLevel": "official-announcement",
+    "refreshIntervalDays": 30
+  },
+  {
+    "id": "source-dma-investigations",
+    "title": "Commission opens non-compliance investigations under the DMA",
+    "url": "https://ec.europa.eu/commission/presscorner/api/files/document/print/en/ip_24_1689/IP_24_1689_EN.pdf",
+    "publisher": "European Commission · Press corner",
+    "publishedAt": "2024-03-25",
+    "evidenceLevel": "official-announcement",
+    "refreshIntervalDays": 30
+  },
+  {
+    "id": "source-dsa-enforcement",
+    "title": "The enforcement framework under the Digital Services Act",
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/dsa-enforcement",
+    "publisher": "European Commission · DG CONNECT",
+    "evidenceLevel": "authority-page",
+    "refreshIntervalDays": 7
+  },
+  {
+    "id": "source-germany-ai-act-role",
+    "title": "Bundesnetzagentur takes on key role in implementation of AI Act",
+    "url": "https://www.bundesnetzagentur.de/SharedDocs/Pressemitteilungen/EN/2026/20260729_KI_VO.html",
+    "publisher": "Bundesnetzagentur",
+    "publishedAt": "2026-07-29",
+    "evidenceLevel": "official-announcement",
+    "refreshIntervalDays": 30
+  },
+  {
+    "id": "source-germany-ai-act-complaints",
+    "title": "Central point for complaints under the AI Act",
+    "url": "https://www.bundesnetzagentur.de/EN/Areas/Digitalisation/AI/18_Complaints/start.html",
+    "publisher": "Bundesnetzagentur",
+    "evidenceLevel": "authority-page",
+    "refreshIntervalDays": 7
+  }
+]

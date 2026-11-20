@@ -1,0 +1,74 @@
+{
+  "ai-act-governance-enforcement": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official AI Act governance and enforcement page checked."
+  },
+  "ai-act-enforcement-framework": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official AI Act enforcement framework checked."
+  },
+  "ai-office-frontier-model-information-requests": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official RFI reporting checked; no infringement, remediation, or penalty inferred."
+  },
+  "ai-act-enforcement-start-transparency": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official Commission enforcement-start announcement checked."
+  },
+  "ai-act-market-surveillance-directory": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official Member State market-surveillance directory checked."
+  },
+  "ai-act-germany-complaints-channel": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official German AI Act implementation and complaints pages checked; no individual case inferred."
+  },
+  "ai-office-role-and-tasks": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official AI Office role page checked."
+  },
+  "ai-act-gpai-questions-answers": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official GPAI questions and answers checked."
+  },
+  "ai-act-fundamental-rights-request-channel": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official Article 77 request channel checked."
+  },
+  "ai-act-independent-expert-support": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official expert-support announcement checked."
+  },
+  "dma-non-compliance-investigations": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official DMA source checked and retained outside AI Act KPI."
+  },
+  "dsa-enforcement-framework": {
+    "status": "verified",
+    "reviewedAt": "2026-11-20",
+    "reviewer": "tracker-maintainer",
+    "note": "Official DSA source checked and retained outside AI Act KPI."
+  }
+}
