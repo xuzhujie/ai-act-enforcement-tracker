@@ -23,9 +23,9 @@ npm run refresh:data -- --allow-failures --retries 2 --retry-delay-ms 500
 npm run validate:data
 ```
 
-刷新器读取 `src/data/source-registry.json`，对每个 URL 使用 Node `fetch`，记录 `checkedAt`、HTTP 状态、content type、HTML title、内容哈希和错误。单个来源失败不会抹掉其他来源；失败记录必须保留错误文本，并在 Sources 页面显示为“访问失败”。
+刷新器读取 `src/data/source-registry.json`，对每个 URL 使用 Node `fetch`，记录 `checkedAt`、HTTP 状态、content type、HTML title、内容哈希、上次哈希和错误。单个来源失败不会抹掉其他来源；失败记录必须保留错误文本，并在 Sources 页面显示为“访问失败”。默认最多 4 个来源并发，避免一次刷新压垮官方站点。
 
-对 HTTP 429、5xx 和网络异常，刷新器默认最多再试 2 次，等待时间按 500ms、1s 递增；如果响应带 `Retry-After`，优先使用该值（单次等待上限 10 秒）。快照还会保留 `attempts` 和 `retryAfterSeconds`，Sources 页面会在顶部单独提示失败来源和等待信息。默认情况下，存在失败来源会使刷新命令返回非零；每日 GitHub Actions 使用 `--allow-failures`，这样可以提交包含失败状态的快照供人工处理。`npm run validate:data` 仍会阻止重复 ID、非 HTTPS、非法 evidence level、未知快照来源和缺失错误信息进入构建。
+对 HTTP 429、5xx 和网络异常，刷新器默认最多再试 2 次，等待时间按 500ms、1s 递增；如果响应带 `Retry-After`，优先使用该值（单次等待上限 10 秒）。快照还会保留 `attempts`、`retryAfterSeconds` 和内容变化标记，Sources 页面会在顶部单独提示失败来源、等待信息和变化来源。默认情况下，存在失败来源会使刷新命令返回非零；每日 GitHub Actions 使用 `--allow-failures`，这样可以提交包含失败状态的快照供人工处理。`npm run validate:data` 仍会阻止重复 ID、非 HTTPS、非法 evidence level、未知快照来源、缺失快照记录和缺失错误信息进入构建；应用层校验还会检查主责任机关、Matter 来源、事件来源、事件日期、动作细分与状态兼容性。
 
 合并刷新 PR 前：
 
@@ -41,11 +41,12 @@ npm run validate:data
 
 ## 4. 新事项录入
 
-一条 Matter 是一个监管线程；历史节点放入 `events`。至少填写：监管轨道、主机关、动作类型、状态、法律基础、来源、首次发布日期、最后更新时间、最后核验日期和日期依据。
+一条 Matter 是一个监管线程；历史节点放入 `events`。至少填写：监管轨道、主机关、当前动作类型、当前动作细分、状态、法律基础、来源、首次发布日期、最后更新时间、最后核验日期和日期依据。每个事件都要填写 `sourceIds`；来源已发布事件还要填写简短 `citation`，必要时填写 `sourceLocator`。
 
 AI Office RFI、事故报告、信息请求等事项：
 
-- `actionType: investigation`
+- `currentActionType: investigation`
+- `currentActionSubtype: information-request` 或 `incident-review`，除非官方来源明确确认了正式调查
 - 说明是否为调查 / RFI / incident review
 - 明确写出“未公开违法认定 / 整改 / 处罚”（如果来源确实没有这些内容）
 - 不填写 `penaltyAmount`，除非正式决定披露了罚款
@@ -58,6 +59,8 @@ AI Office RFI、事故报告、信息请求等事项：
 npm run check
 ```
 
-检查通过后运行本地预览，核验：Overview 的两条监管泳道、Matters 筛选和 URL、排序、CSV 导出、About 边界说明、Authorities 的成员国目录、Excluded 的相邻制度、Sources 的健康状态和事项详情抽屉。
+CI 使用 Node 22 LTS；GitHub Actions 依赖使用 major 版本并在依赖更新 PR 中复核。CI 同时运行构建产物 smoke test，确保 Pages / Netlify 的静态入口和 module asset 能被实际服务；刷新 workflow 设有并发锁，避免定时任务重叠。
+
+检查通过后运行本地预览，核验：Overview 的两条监管泳道、Matters 的当前动作 / 历史动作 / 范围 / 证据筛选和 URL、浏览器前进后退、排序、CSV 导出、About 边界说明、Authorities 的成员国目录与覆盖边界、Excluded 的相邻制度、Sources 的健康状态 / 内容变化和事项详情抽屉。
 
 Netlify 使用仓库根目录的 `netlify.toml`：构建命令为 `npm run build`，发布目录为 `dist`，所有前端路径回退到 `index.html`。GitHub Actions 配置已经放入 `.github/workflows/`，但必须先把当前工作区推送到一个 GitHub 仓库，CI 和每日刷新 PR 才会实际运行。
