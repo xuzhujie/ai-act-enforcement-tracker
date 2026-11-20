@@ -8,6 +8,7 @@ const DEFAULT_MANIFEST = path.join(ROOT, 'src/data/source-registry.json')
 const DEFAULT_OUTPUT = path.join(ROOT, 'src/data/source-snapshot.json')
 const DEFAULT_RETRIES = 2
 const DEFAULT_RETRY_DELAY_MS = 500
+const DEFAULT_CONCURRENCY = 4
 
 export function extractTitle(html) {
   const match = String(html).match(/<title[^>]*>([\s\S]*?)<\/title>/i)
@@ -20,7 +21,7 @@ function hashContent(body) {
 }
 
 export function parseArgs(argv) {
-  const result = { manifestPath: undefined, outputPath: undefined, fixturePath: undefined, allowFailures: false, timeoutMs: 15000, retries: DEFAULT_RETRIES, retryDelayMs: DEFAULT_RETRY_DELAY_MS }
+  const result = { manifestPath: undefined, outputPath: undefined, fixturePath: undefined, allowFailures: false, timeoutMs: 15000, retries: DEFAULT_RETRIES, retryDelayMs: DEFAULT_RETRY_DELAY_MS, concurrency: DEFAULT_CONCURRENCY }
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index]
     if (arg === '--manifest') result.manifestPath = argv[++index]
@@ -30,6 +31,7 @@ export function parseArgs(argv) {
     else if (arg === '--timeout-ms') result.timeoutMs = Number(argv[++index])
     else if (arg === '--retries') result.retries = Number(argv[++index])
     else if (arg === '--retry-delay-ms') result.retryDelayMs = Number(argv[++index])
+    else if (arg === '--concurrency') result.concurrency = Number(argv[++index])
     else if (arg === '--help') result.help = true
     else throw new Error(`Unknown option: ${arg}`)
   }
@@ -60,10 +62,22 @@ export async function refreshSources({
   timeoutMs = 15000,
   retries = DEFAULT_RETRIES,
   retryDelayMs = DEFAULT_RETRY_DELAY_MS,
+  concurrency = DEFAULT_CONCURRENCY,
+  previousSnapshot,
   sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay)),
 }) {
   const checkedAt = now.toISOString()
-  const records = await Promise.all(sources.map(async (source) => {
+  const previousRecords = new Map((previousSnapshot?.records ?? []).map((record) => [record.sourceId, record]))
+  const decorateRecord = (record) => {
+    const previousContentHash = previousRecords.get(record.sourceId)?.contentHash
+    if (!previousContentHash || !record.contentHash) return record
+    return {
+      ...record,
+      previousContentHash,
+      contentChanged: previousContentHash !== record.contentHash,
+    }
+  }
+  const refreshOne = async (source) => {
     let retryAfterSeconds
     for (let attempt = 1; attempt <= retries + 1; attempt += 1) {
       try {
@@ -79,7 +93,7 @@ export async function refreshSources({
           await sleep(Math.min(delay, 10000))
           continue
         }
-        return {
+        return decorateRecord({
           sourceId: source.id,
           checkedAt,
           attempts: attempt,
@@ -90,22 +104,43 @@ export async function refreshSources({
           ok: Boolean(response.ok),
           ...(response.ok ? {} : { error: `HTTP ${response.status} after ${attempt} attempts` }),
           ...(retryAfterSeconds === undefined ? {} : { retryAfterSeconds }),
-        }
+        })
       } catch (error) {
         if (attempt <= retries) {
           await sleep(Math.min(retryDelayMs * 2 ** (attempt - 1), 10000))
           continue
         }
-        return { sourceId: source.id, checkedAt, attempts: attempt, ok: false, error: normalizeError(error) }
+        return decorateRecord({ sourceId: source.id, checkedAt, attempts: attempt, ok: false, error: normalizeError(error) })
       }
     }
-    return { sourceId: source.id, checkedAt, attempts: retries + 1, ok: false, error: 'Refresh exhausted without a response' }
-  }))
+    return decorateRecord({ sourceId: source.id, checkedAt, attempts: retries + 1, ok: false, error: 'Refresh exhausted without a response' })
+  }
+  const records = Array(sources.length)
+  let nextIndex = 0
+  const workerCount = Math.max(1, Math.min(Number.isFinite(concurrency) ? Math.floor(concurrency) : DEFAULT_CONCURRENCY, sources.length || 1))
+  const worker = async () => {
+    while (true) {
+      const index = nextIndex
+      nextIndex += 1
+      if (index >= sources.length) return
+      records[index] = await refreshOne(sources[index])
+    }
+  }
+  await Promise.all(Array.from({ length: workerCount }, () => worker()))
   return { generatedAt: checkedAt, records }
 }
 
 async function readJson(filePath) {
   return JSON.parse(await readFile(filePath, 'utf8'))
+}
+
+async function readOptionalJson(filePath) {
+  try {
+    return await readJson(filePath)
+  } catch (error) {
+    if (error?.code === 'ENOENT') return undefined
+    throw error
+  }
 }
 
 async function fixtureFetch(fixturePath) {
@@ -125,17 +160,19 @@ async function fixtureFetch(fixturePath) {
 async function main() {
   const options = parseArgs(process.argv.slice(2))
   if (options.help) {
-    console.log('Usage: npm run refresh:data -- [--fixture path] [--allow-failures] [--timeout-ms 15000] [--retries 2] [--retry-delay-ms 500]')
+    console.log('Usage: npm run refresh:data -- [--fixture path] [--allow-failures] [--timeout-ms 15000] [--retries 2] [--retry-delay-ms 500] [--concurrency 4]')
     return
   }
   const manifestPath = options.manifestPath ?? DEFAULT_MANIFEST
   const outputPath = options.outputPath ?? DEFAULT_OUTPUT
   const sources = await readJson(manifestPath)
+  const previousSnapshot = await readOptionalJson(outputPath)
   const fetchImpl = options.fixturePath ? await fixtureFetch(options.fixturePath) : fetch
-  const snapshot = await refreshSources({ sources, fetchImpl, timeoutMs: options.timeoutMs, retries: options.retries, retryDelayMs: options.retryDelayMs })
+  const snapshot = await refreshSources({ sources, fetchImpl, timeoutMs: options.timeoutMs, retries: options.retries, retryDelayMs: options.retryDelayMs, concurrency: options.concurrency, previousSnapshot })
   await writeFile(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8')
   const failures = snapshot.records.filter((record) => !record.ok)
-  console.log(`Refreshed ${snapshot.records.length} sources; ${failures.length} failed; wrote ${outputPath}`)
+  const changed = snapshot.records.filter((record) => record.contentChanged).length
+  console.log(`Refreshed ${snapshot.records.length} sources; ${failures.length} failed; ${changed} changed; wrote ${outputPath}`)
   if (failures.length > 0 && !options.allowFailures) process.exitCode = 1
 }
 
