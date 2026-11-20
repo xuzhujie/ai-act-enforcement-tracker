@@ -1,5 +1,5 @@
-import type { AuthorityProfile, Matter, ActionType } from '../types'
-import { getLatestEvent, sortMatters } from '../lib/filters'
+import type { AuthorityProfile, Matter } from '../types'
+import { getLatestEvent, isFormalInvestigation, sortMatters } from '../lib/filters'
 import Badge from './Badge'
 import Icon from './icons'
 
@@ -23,7 +23,13 @@ const laneDefinitions = [
   },
 ]
 
-const actionTypes: ActionType[] = ['investigation', 'remediation', 'penalty', 'guidance']
+const laneMetrics = [
+  { key: 'formal-investigation', label: '正式调查', matches: (matter: Matter) => isFormalInvestigation(matter) },
+  { key: 'information-request', label: '信息请求', matches: (matter: Matter) => matter.currentActionSubtype === 'information-request' },
+  { key: 'remediation', label: '整改', matches: (matter: Matter) => matter.currentActionType === 'remediation' },
+  { key: 'penalty', label: '处罚 / 决定', matches: (matter: Matter) => matter.currentActionType === 'penalty' },
+  { key: 'guidance', label: '指南 / 基础设施', matches: (matter: Matter) => matter.currentActionType === 'guidance' },
+]
 
 export default function AuthorityLanes({ matters, authorities, onSelectMatter, hasActiveFilters = false }: AuthorityLanesProps) {
   const edpsMatters = matters.filter((matter) => matter.authorityLane === 'edps')
@@ -46,10 +52,10 @@ export default function AuthorityLanes({ matters, authorities, onSelectMatter, h
               <span className="lane-count">{laneMatters.length} 条</span>
             </div>
             <div className="lane-metrics">
-              {actionTypes.map((actionType) => (
-                <div className="lane-metric" key={actionType}>
-                  <span>{actionType === 'investigation' ? '调查' : actionType === 'remediation' ? '整改' : actionType === 'penalty' ? '处罚 / 决定' : '指南'}</span>
-                  <strong>{laneMatters.filter((matter) => matter.actionType === actionType).length}</strong>
+              {laneMetrics.map((metric) => (
+                <div className="lane-metric" key={metric.key}>
+                  <span>{metric.label}</span>
+                  <strong>{laneMatters.filter(metric.matches).length}</strong>
                 </div>
               ))}
             </div>
@@ -58,7 +64,7 @@ export default function AuthorityLanes({ matters, authorities, onSelectMatter, h
                 {recentMatters.map((matter) => (
                   <button className="lane-row" type="button" key={matter.id} onClick={() => onSelectMatter(matter.id)}>
                     <span className="lane-row-title">{matter.shortTitle}</span>
-                    <Badge kind="action" value={matter.actionType} compact />
+                    <Badge kind="action" value={matter.currentActionType} subtype={matter.currentActionSubtype} compact />
                     <span className="lane-row-date">{getLatestEvent(matter).date}</span>
                     <Icon name="arrow-right" size={15} />
                   </button>
