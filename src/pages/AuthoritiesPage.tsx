@@ -6,17 +6,25 @@ import Icon from '../components/icons'
 type AuthoritiesPageProps = {
   matters: Matter[]
   authorities: AuthorityProfile[]
+  onSelectAuthority?: (authorityId: string) => void
 }
 
-export default function AuthoritiesPage({ matters, authorities }: AuthoritiesPageProps) {
+const coverageLabels = {
+  'case-found': '已发现个案',
+  'searched-no-case': '已检索，未发现个案',
+  'directory-only': '目录级覆盖',
+  'not-reviewed': '尚未检索',
+} as const
+
+export default function AuthoritiesPage({ matters, authorities, onSelectAuthority }: AuthoritiesPageProps) {
   const counts = getAuthorityCounts(matters, authorities)
   const memberStateCounts = counts.filter((authority) => authority.lane === 'member-state-msa' && authority.country !== 'EU').sort((a, b) => a.country.localeCompare(b.country))
   const aiOffice = counts.find((authority) => authority.authorityId === 'ai-office')
   const aggregateMsa = counts.find((authority) => authority.authorityId === 'member-state-msas')
   const edps = counts.find((authority) => authority.authorityId === 'edps')
   const nationalLaneCount = matters.filter((matter) => matter.authorityLane === 'member-state-msa').length
-  const nationalCaseCount = matters.filter((matter) => matter.authorityLane === 'member-state-msa' && matter.actionType !== 'guidance').length
-  const nationalInfrastructureCount = matters.filter((matter) => matter.authorityLane === 'member-state-msa' && matter.actionType === 'guidance').length
+  const nationalCaseCount = matters.filter((matter) => matter.authorityLane === 'member-state-msa' && matter.currentActionType !== 'guidance').length
+  const nationalInfrastructureCount = matters.filter((matter) => matter.authorityLane === 'member-state-msa' && matter.currentActionType === 'guidance').length
 
   return (
     <div className="page-stack authorities-page">
@@ -51,8 +59,15 @@ export default function AuthoritiesPage({ matters, authorities }: AuthoritiesPag
           {memberStateCounts.map((authority) => (
             <div className="authority-directory-row" key={authority.authorityId}>
               <div className="authority-country"><span className="country-code">{authority.country.slice(0, 2).toUpperCase()}</span><strong>{authority.country}</strong></div>
-              <div className="authority-name"><span>{authority.authorityName}</span><span className={`authority-spoc ${authority.isSinglePointOfContact ? 'authority-spoc-listed' : 'authority-spoc-missing'}`}>{authority.isSinglePointOfContact ? 'single point of contact listed' : 'single point of contact not listed'}</span>{authority.designationPending && <span className="pending-mark">designation pending</span>}</div>
+              <div className="authority-name">
+                <button className="authority-name-button" type="button" onClick={() => onSelectAuthority?.(authority.authorityId)} aria-label={'按 ' + authority.country + ' 的记录筛选'}>
+                  <span>{authority.authorityName}</span>
+                  <span className={'authority-spoc ' + (authority.isSinglePointOfContact ? 'authority-spoc-listed' : 'authority-spoc-missing')}>{authority.isSinglePointOfContact ? 'single point of contact listed' : 'single point of contact not listed'}</span>
+                  {authority.designationPending && <span className="pending-mark">designation pending</span>}
+                </button>
+              </div>
               <div className="authority-count"><strong>{authority.matterCount}</strong><span>条记录</span></div>
+              <div className="authority-coverage-status"><strong>{authority.coverage ? coverageLabels[authority.coverage.status] : '尚未检索'}</strong><span>{authority.coverage?.checkedAt ?? '—'} · {authority.coverage?.limitation ?? '暂无覆盖说明'}</span></div>
               <a className="source-link" href={authority.source.url} target="_blank" rel="noreferrer">官方目录 <Icon name="external-link" size={13} /></a>
             </div>
           ))}
@@ -63,7 +78,7 @@ export default function AuthoritiesPage({ matters, authorities }: AuthoritiesPag
         <div className="callout-icon"><Icon name="info" size={20} /></div>
         <div>
           <h2>{nationalCaseCount === 0 ? '当前没有公开可核验的成员国个案调查、整改或处罚。' : `已收录 ${nationalCaseCount} 条成员国个案动作。`}</h2>
-          <p>已收录的成员国记录（当前 {nationalInfrastructureCount} 条）是官方监管架构、投诉入口或实施说明；不会被包装成个案执法结果。新个案须经过来源和编辑审核后才进入 KPI。</p>
+          <p>已收录的成员国记录（当前 {nationalInfrastructureCount} 条）是官方监管架构、投诉入口或实施说明；不会被包装成个案执法结果。成员国行显示的是目录级覆盖，不是穷尽式案件发现。新个案须经过来源和编辑审核后才进入 KPI。</p>
         </div>
       </section>
 
