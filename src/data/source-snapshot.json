@@ -1,134 +1,160 @@
 {
-  "generatedAt": "2026-11-19T17:22:23.201Z",
+  "generatedAt": "2026-11-21T13:29:49.010Z",
   "records": [
     {
       "sourceId": "source-ai-governance",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "text/html; charset=UTF-8",
       "title": "Governance and enforcement of the AI Act | Shaping Europe’s digital future",
-      "contentHash": "54c0ed5fe3ab371dd07f3635d929345751296c01ffd1d2836eb4ae03fe9a7204",
-      "ok": true
+      "contentHash": "9a76f0eaabc744cdb632f331b5f9a84bf5a201f13ba759f59d84cf256d29ba85",
+      "ok": true,
+      "previousContentHash": "54c0ed5fe3ab371dd07f3635d929345751296c01ffd1d2836eb4ae03fe9a7204",
+      "contentChanged": true
     },
     {
       "sourceId": "source-ai-enforcement-framework",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "text/html; charset=UTF-8",
       "title": "The enforcement framework of the AI Act | Shaping Europe’s digital future",
-      "contentHash": "da749f30cd8888debcab5738bc35eb0c6880a92d0cc800cc3f89dbbf237798ef",
-      "ok": true
+      "contentHash": "7c5e595d67ecd6b636849082dbc8d75a1ad636c585a699b344272d69e1dc1f66",
+      "ok": true,
+      "previousContentHash": "da749f30cd8888debcab5738bc35eb0c6880a92d0cc800cc3f89dbbf237798ef",
+      "contentChanged": true
     },
     {
       "sourceId": "source-market-surveillance",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "text/html; charset=UTF-8",
       "title": "Market Surveillance Authorities under the AI Act | Shaping Europe’s digital future",
-      "contentHash": "6a965aae67b60d362eacb0ab9afaddf0ad9ab6383e0277d63ee1a1bb2fb7806e",
-      "ok": true
+      "contentHash": "d5944606c787961d4d15a56a2eaf6dc1b540d33e045938cf41d5f0be2ff86dd9",
+      "ok": true,
+      "previousContentHash": "6a965aae67b60d362eacb0ab9afaddf0ad9ab6383e0277d63ee1a1bb2fb7806e",
+      "contentChanged": true
     },
     {
       "sourceId": "source-ai-office",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "text/html; charset=UTF-8",
       "title": "European AI Office | Shaping Europe’s digital future",
-      "contentHash": "6d65fc189d5696bac6559667c766f98dccc644ff2cda6c47f49ecc883699f2be",
-      "ok": true
+      "contentHash": "7f5d923c79f54e297d15b8eab14f72492398cc63ad02dfe940c1304c90c0dbf2",
+      "ok": true,
+      "previousContentHash": "6d65fc189d5696bac6559667c766f98dccc644ff2cda6c47f49ecc883699f2be",
+      "contentChanged": true
     },
     {
       "sourceId": "source-gpai-qa",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "text/html; charset=UTF-8",
       "title": "General-Purpose AI Models in the AI Act – Questions & Answers | Shaping Europe’s digital future",
-      "contentHash": "f292ce7d53b8ec44454e022cf9379f5615966a13b97aa7c533e399a5efe64f17",
-      "ok": true
+      "contentHash": "ee24fd53f47e73ae4d65185492c83fe31f89849c75b40fd5e8408f6b193def5e",
+      "ok": true,
+      "previousContentHash": "f292ce7d53b8ec44454e022cf9379f5615966a13b97aa7c533e399a5efe64f17",
+      "contentChanged": true
     },
     {
       "sourceId": "source-fundamental-rights-request-channel",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "text/html; charset=UTF-8",
       "title": "AI Act request channel for national fundamental rights authorities | Shaping Europe’s digital future",
-      "contentHash": "84e604f2137469e5eccf933fe0ef0c3ddb0413b1f0857963fb7cc49ae8b1b0b3",
-      "ok": true
+      "contentHash": "41de8cfe957013553cc10a9cde38f898503d3896175162fcdc5226ecc1de64e3",
+      "ok": true,
+      "previousContentHash": "84e604f2137469e5eccf933fe0ef0c3ddb0413b1f0857963fb7cc49ae8b1b0b3",
+      "contentChanged": true
     },
     {
       "sourceId": "source-independent-expert-support",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 2,
       "httpStatus": 200,
       "contentType": "text/html; charset=UTF-8",
       "title": "AI Act enforcement gets independent expert support | Shaping Europe’s digital future",
-      "contentHash": "dc45f774626ae53726c4f4acec333c55355d656e4c81d570be88ef7712c0de20",
+      "contentHash": "6c4bbf5a15ae30a8149d8ea2d6bdea39b10c68fa3484753004607bd824055064",
       "ok": true,
-      "retryAfterSeconds": 10
+      "retryAfterSeconds": 10,
+      "previousContentHash": "dc45f774626ae53726c4f4acec333c55355d656e4c81d570be88ef7712c0de20",
+      "contentChanged": true
     },
     {
       "sourceId": "source-ai-scientific-panel",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "text/html; charset=UTF-8",
       "title": "Special meeting of the AI Scientific Panel | Shaping Europe’s digital future",
-      "contentHash": "d215792a5dbcfe0e3dbc811b8cdaed68ca4cadfe6e0c4c0bd1cce6e580793d4b",
-      "ok": true
+      "contentHash": "e065eb6598368d0273275449a401523dc2eb4c50a1caa6860c5c97e17f7cd4b3",
+      "ok": true,
+      "previousContentHash": "d215792a5dbcfe0e3dbc811b8cdaed68ca4cadfe6e0c4c0bd1cce6e580793d4b",
+      "contentChanged": true
     },
     {
       "sourceId": "source-ai-enforcement-start",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "application/pdf",
       "contentHash": "bed58f38b49358f65e049c7cb866b631711bcc4f3893c492315c2f8616af460b",
-      "ok": true
+      "ok": true,
+      "previousContentHash": "bed58f38b49358f65e049c7cb866b631711bcc4f3893c492315c2f8616af460b",
+      "contentChanged": false
     },
     {
       "sourceId": "source-dma-investigations",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "application/pdf",
       "contentHash": "79abf82357780860feb7f154cd2052a2d8d2dbb24c5c91220e5223990b252450",
-      "ok": true
+      "ok": true,
+      "previousContentHash": "79abf82357780860feb7f154cd2052a2d8d2dbb24c5c91220e5223990b252450",
+      "contentChanged": false
     },
     {
       "sourceId": "source-dsa-enforcement",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "text/html; charset=UTF-8",
       "title": "The enforcement framework under the Digital Services Act | Shaping Europe’s digital future",
-      "contentHash": "421c3c7d09bd2dad91b9e87081c7c04af0ca647be4e31b5809beea804944751b",
-      "ok": true
+      "contentHash": "93410343c555be91907caeea59fa5494d4d8290d03a1bbd274f18f70d4a30101",
+      "ok": true,
+      "previousContentHash": "421c3c7d09bd2dad91b9e87081c7c04af0ca647be4e31b5809beea804944751b",
+      "contentChanged": true
     },
     {
       "sourceId": "source-germany-ai-act-role",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "text/html;charset=utf-8",
       "title": "Bundesnetzagentur - Press - Bundesnetzagentur takes on key role in implementation of AI Act",
-      "contentHash": "0d61f59d0efc8fa86e0cd81eb578ee06ef14069295016cf5844acfbdf6ebc704",
-      "ok": true
+      "contentHash": "f037e6312906c420b38b3098453698ac5d600fa5b23b5cabe225e0a8f5dbd3bf",
+      "ok": true,
+      "previousContentHash": "0d61f59d0efc8fa86e0cd81eb578ee06ef14069295016cf5844acfbdf6ebc704",
+      "contentChanged": true
     },
     {
       "sourceId": "source-germany-ai-act-complaints",
-      "checkedAt": "2026-11-19T17:22:23.201Z",
+      "checkedAt": "2026-11-21T13:29:49.010Z",
       "attempts": 1,
       "httpStatus": 200,
       "contentType": "text/html;charset=utf-8",
       "title": "Bundesnetzagentur - Central point for complaints",
-      "contentHash": "095d9ee89ef1acd3c246c761b924115bad986c3893661bcea08c6443cb146fb2",
-      "ok": true
+      "contentHash": "5aa373923d4110ba60c6bfb9444c03834ba3bbb914150634a75a5b22f6f7a179",
+      "ok": true,
+      "previousContentHash": "095d9ee89ef1acd3c246c761b924115bad986c3893661bcea08c6443cb146fb2",
+      "contentChanged": true
     }
   ]
 }
