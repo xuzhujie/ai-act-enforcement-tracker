@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { aiActMatters, authorities } from '../data/seed'
+import { aiActMatters, authorities, excludedMatters } from '../data/seed'
 import type { Matter, Source, SourceRefreshSnapshot } from '../types'
 import { getSourceHealth, validateTrackerData } from './dataValidation'
 
@@ -41,8 +41,9 @@ describe('validateTrackerData', () => {
   })
 
   it('flags duplicate ids, unsafe URLs, missing exclusion reasons, and unknown supporting authorities', () => {
-    const adjacent = { ...baseMatter, id: 'matter-adjacent', regime: 'dma' as const, inclusionNote: '', sources: [{ ...source, id: 'source-test', url: 'http://unsafe.example.com' }], exclusionReason: undefined, supportingAuthorities: ['missing-authority'] }
-    const issues = validateTrackerData([baseMatter, adjacent], authorities, [source, ...adjacent.sources])
+    const adjacent = { ...baseMatter, id: 'matter-adjacent', regime: 'dma' as const, inclusionNote: '', sources: [{ ...source, id: 'source-test', url: 'http://unsafe.example.com' }], exclusionReason: undefined }
+    const aiMatterWithUnknownSupport = { ...baseMatter, id: 'matter-ai-unknown-support', supportingAuthorities: ['missing-authority'] }
+    const issues = validateTrackerData([aiMatterWithUnknownSupport, adjacent], authorities, [source, ...adjacent.sources])
 
     expect(issues.map((issue) => issue.code)).toEqual(expect.arrayContaining([
       'duplicate-source-id',
@@ -50,6 +51,12 @@ describe('validateTrackerData', () => {
       'missing-exclusion-reason',
       'unknown-supporting-authority',
     ]))
+  })
+
+  it('does not require adjacent-regime authority ids to exist in the AI Act authority registry', () => {
+    const issues = validateTrackerData([...aiActMatters, ...excludedMatters], authorities)
+
+    expect(issues.filter((item) => item.severity === 'error')).toEqual([])
   })
 
   it('flags broken authority and event evidence joins, invalid event dates, missing citations, and incomplete snapshots', () => {
