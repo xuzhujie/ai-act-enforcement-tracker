@@ -37,7 +37,10 @@ export function validateTrackerData(matters: Matter[], authorities: AuthorityPro
   for (const matter of matters) {
     if (matterIds.has(matter.id)) issues.push(issue('duplicate-matter-id', `matters.${matter.id}`, `Duplicate matter id: ${matter.id}`))
     matterIds.add(matter.id)
-    if (!authorityIds.has(matter.primaryAuthorityId)) issues.push(issue('unknown-primary-authority', `matters.${matter.id}.primaryAuthorityId`, `Unknown primary authority: ${matter.primaryAuthorityId}`))
+    // The authority registry is intentionally scoped to AI Act governance. Adjacent-regime
+    // reference matters keep their own source-backed authority labels, but must not be
+    // mistaken for missing AI Act authority records.
+    if (matter.regime === 'ai-act' && !authorityIds.has(matter.primaryAuthorityId)) issues.push(issue('unknown-primary-authority', `matters.${matter.id}.primaryAuthorityId`, `Unknown primary authority: ${matter.primaryAuthorityId}`))
     if (!matter.sources.length) issues.push(issue('missing-matter-source', `matters.${matter.id}.sources`, 'Every matter must have at least one source'))
     const matterSourceIds = new Set(matter.sources.map((source) => source.id))
     for (const source of matter.sources) {
@@ -46,8 +49,10 @@ export function validateTrackerData(matters: Matter[], authorities: AuthorityPro
     }
     if (matter.regime === 'ai-act' && matter.exclusionReason) issues.push(issue('ai-act-has-exclusion-reason', `matters.${matter.id}.exclusionReason`, 'AI Act matters cannot carry an adjacent-regime exclusion reason'))
     if (matter.regime !== 'ai-act' && !matter.exclusionReason) issues.push(issue('missing-exclusion-reason', `matters.${matter.id}.exclusionReason`, 'Adjacent-regime matters must explain why they are excluded from AI Act KPI'))
-    for (const authorityId of matter.supportingAuthorities ?? []) {
-      if (!authorityIds.has(authorityId)) issues.push(issue('unknown-supporting-authority', `matters.${matter.id}.supportingAuthorities`, `Unknown supporting authority: ${authorityId}`))
+    if (matter.regime === 'ai-act') {
+      for (const authorityId of matter.supportingAuthorities ?? []) {
+        if (!authorityIds.has(authorityId)) issues.push(issue('unknown-supporting-authority', `matters.${matter.id}.supportingAuthorities`, `Unknown supporting authority: ${authorityId}`))
+      }
     }
     for (const dateField of ['firstPublishedAt', 'lastUpdatedAt', 'lastVerifiedAt'] as const) {
       if (!ISO_DATE.test(matter[dateField])) issues.push(issue('invalid-matter-date', `matters.${matter.id}.${dateField}`, `Invalid ISO date: ${matter[dateField]}`))
