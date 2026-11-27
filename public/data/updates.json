@@ -1,0 +1,54 @@
+{
+  "updated_at": "2026-11-27",
+  "source": "ai-act-enforcement-tracker src/data/seed.ts",
+  "items": [
+    {
+      "title": "AI Act governance and enforcement architecture",
+      "link": "https://digital-strategy.ec.europa.eu/en/policies/ai-act-governance-and-enforcement",
+      "date": "2026-11-20",
+      "summary": "Overview of the AI Office, the European AI Board, advisory bodies, and national competent authorities."
+    },
+    {
+      "title": "AI Act enforcement framework and powers",
+      "link": "https://digital-strategy.ec.europa.eu/en/policies/enforcement-ai-act",
+      "date": "2026-11-20",
+      "summary": "Commission services overview of AI Office powers, monitoring tools, sanctions, and progressive application dates."
+    },
+    {
+      "title": "European AI Office role and implementation tasks",
+      "link": "https://digital-strategy.ec.europa.eu/en/policies/ai-office",
+      "date": "2026-11-20",
+      "summary": "Official description of the AI Office’s role in GPAI supervision, guidance, investigations, and corrective action."
+    },
+    {
+      "title": "GPAI obligations and AI Office enforcement powers",
+      "link": "https://digital-strategy.ec.europa.eu/en/faqs/general-purpose-ai-models-ai-act-questions-answers",
+      "date": "2026-11-20",
+      "summary": "Questions and answers on GPAI obligations, model evaluations, access requests, corrective measures, and fines."
+    },
+    {
+      "title": "Member State market-surveillance authority directory",
+      "link": "https://digital-strategy.ec.europa.eu/en/policies/market-surveillance-authorities-under-ai-act",
+      "date": "2026-11-09",
+      "summary": "Official directory and description of national market-surveillance powers, cooperation, and designation status."
+    },
+    {
+      "title": "Request channel for national fundamental-rights authorities",
+      "link": "https://digital-strategy.ec.europa.eu/en/miscellaneous/ai-act-request-channel-national-fundamental-rights-authorities",
+      "date": "2026-10-20",
+      "summary": "Practical channel for national fundamental-rights bodies to request AI Act information from the AI Office."
+    },
+    {
+      "title": "AI Office information requests on frontier-model loss-of-control incidents",
+      "link": "https://digital-strategy.ec.europa.eu/en/news/special-meeting-ai-scientific-panel",
+      "date": "2026-10-12",
+      "summary": "The Commission states that the AI Office requested and received serious-incident reports and sent requests for information on security practices after recent loss-of-control incidents involving advanc"
+    },
+    {
+      "title": "AI Act enforcement powers and transparency rules begin to apply",
+      "link": "https://ec.europa.eu/commission/presscorner/api/files/document/print/en/ip_26_1714/IP_26_1714_EN.pdf",
+      "date": "2026-07-31",
+      "summary": "Commission press release marking the start of AI Act enforcement powers and transparency requirements on 2 August 2026."
+    }
+  ]
+}
